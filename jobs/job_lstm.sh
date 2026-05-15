@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=music_lstm
-#SBATCH --partition=gpu_4
+#SBATCH --partition=gpu_h100
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
 #SBATCH --time=02:00:00

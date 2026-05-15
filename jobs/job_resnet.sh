@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=music_resnet
-#SBATCH --partition=gpu_4
+#SBATCH --partition=gpu_h100
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
 #SBATCH --time=04:00:00
