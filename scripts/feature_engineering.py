@@ -2,82 +2,48 @@ import os
 import librosa
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
-from tqdm import tqdm
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(SCRIPT_DIR)
-RAW_DATA_PATH = os.path.join(ROOT_DIR, "data", "gtzan")
-FEAT_DIR = os.path.join(ROOT_DIR, "features")
-os.makedirs(FEAT_DIR, exist_ok=True)
-
-SR = 22050
-CLIP_SEC = 3
-N_MFCC = 20
-GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 
-          'jazz', 'metal', 'pop', 'reggae', 'rock']
-
-def extract_ventral_features(segment, sr):
-    sc = librosa.feature.spectral_centroid(y=segment, sr=sr)
-    chroma = librosa.feature.chroma_stft(y=segment, sr=sr)
-    rms = librosa.feature.rms(y=segment)
+def extract_features(data_path='data/gtzan'):
+    genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
+    data = []
     
-    return {
-        'centroid_mean': np.mean(sc),
-        'centroid_var': np.var(sc),
-        'chroma_mean': np.mean(chroma),
-        'chroma_var': np.var(chroma),
-        'rms_mean': np.mean(rms),
-        'rms_var': np.var(rms)
-    }
-
-def extract_dorsal_features(segment, sr):
-    mfcc = librosa.feature.mfcc(y=segment, sr=sr, n_mfcc=N_MFCC)
-    return mfcc.T 
-
-stats_data = []
-temporal_data = []
-labels = []
-samples_per_clip = SR * CLIP_SEC
-
-if not os.path.exists(RAW_DATA_PATH):
-    raise FileNotFoundError(f"Data directory not found at {RAW_DATA_PATH}")
-
-for genre in GENRES:
-    folder = os.path.join(RAW_DATA_PATH, genre)
-    if not os.path.exists(folder):
-        continue
-    files = sorted([f for f in os.listdir(folder) if f.endswith(('.wav', '.au'))])
-    
-    for fname in tqdm(files, desc=f"Processing {genre}"):
-        path = os.path.join(folder, fname)
-        try:
-            y, _ = librosa.load(path, sr=SR, duration=30.0)
+    print("Starting feature extraction...")
+    for g in genres:
+        for filename in os.listdir(os.path.join(data_path, g)):
+            songpath = os.path.join(data_path, g, filename)
+            y, sr = librosa.load(songpath, mono=True, duration=30)
             
-            if len(y) < samples_per_clip:
-                continue
+            # Statistical Features
+            chroma_stft = librosa.feature.chroma_stft(y=y, sr=sr)
+            rmse = librosa.feature.rms(y=y)
+            spec_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+            spec_bw = librosa.feature.spectral_bandwidth(y=y, sr=sr)
+            rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
+            zcr = librosa.feature.zero_crossing_rate(y)
+            mfcc = librosa.feature.mfcc(y=y, sr=sr)
+            
+            # Row assembly
+            to_append = f'{np.mean(chroma_stft)} {np.mean(rmse)} {np.mean(spec_cent)} {np.mean(spec_bw)} {np.mean(rolloff)} {np.mean(zcr)}'    
+            for e in mfcc:
+                to_append += f' {np.mean(e)}'
+            to_append += f' {g}'
+            data.append(to_append.split())
 
-            for start in range(0, len(y) - samples_per_clip + 1, samples_per_clip):
-                seg = y[start : start + samples_per_clip]
-                
-                v_feat = extract_ventral_features(seg, SR)
-                d_feat = extract_dorsal_features(seg, SR)
-                
-                if v_feat is not None and d_feat is not None:
-                    stats_data.append(v_feat)
-                    temporal_data.append(d_feat)
-                    labels.append(genre)
-        except Exception as e:
-            continue
+    # Save CSV
+    column_names = 'chroma_stft rmse spectral_centroid spectral_bandwidth rolloff zcr'.split()
+    for i in range(1, 21):
+        column_names.append(f'mfcc{i}')
+    column_names.append('label')
+    
+    df = pd.DataFrame(data, columns=column_names)
+    os.makedirs('features', exist_ok=True)
+    df.to_csv('features/statistical_features.csv', index=False)
+    
+    # Save Summary for GitHub
+    with open('logs/features_summary.txt', 'w') as f:
+        f.write(f"Total processed: {len(df)} tracks\n")
+        f.write(df.groupby('label').size().to_string())
+    print("Features saved to features/statistical_features.csv")
 
-le = LabelEncoder()
-y_encoded = le.fit_transform(labels)
-
-np.save(os.path.join(FEAT_DIR, 'y_labels.npy'), y_encoded)
-np.save(os.path.join(FEAT_DIR, 'label_names.npy'), le.classes_)
-
-df = pd.DataFrame(stats_data)
-df['label'] = y_encoded
-df.to_csv(os.path.join(FEAT_DIR, 'statistical_features.csv'), index=False)
-
-np.save(os.path.join(FEAT_DIR, 'temporal_sequences.npy'), np.array(temporal_data))
+if __name__ == "__main__":
+    extract_features()
