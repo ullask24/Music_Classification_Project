@@ -3,7 +3,7 @@
 #SBATCH --partition=dev_gpu_h100
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
-#SBATCH --time=02:00:00
+#SBATCH --time=00:30:00
 #SBATCH --mem=32000
 #SBATCH --output=logs/lstm_%j.txt
 
