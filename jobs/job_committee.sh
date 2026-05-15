@@ -1,9 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=music_final
+#SBATCH --partition=cpu
+#SBATCH --ntasks=1
+#SBATCH --time=00:20:00
+#SBATCH --mem=8000
 #SBATCH --output=logs/committee_%j.txt
 #SBATCH --error=logs/committee_%j.txt
-#SBATCH --mem=8G
-#SBATCH --time=00:15:00
 
 cd ..
 source .venv/bin/activate
