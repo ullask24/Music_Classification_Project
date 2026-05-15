@@ -1,4 +1,4 @@
-# --- Virtual Environments ---
+dKk# --- Virtual Environments ---
 .venv/
 env/
 venv/
@@ -28,6 +28,4 @@ __pycache__/
 .DS_Store
 .ipynb_checkpoints/
 
-# --- Results (Optional: Keep these if you want them on GitHub) ---
-# If you want to track your confusion matrices, comment the line below
-*.png
+
