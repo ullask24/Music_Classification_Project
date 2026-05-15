@@ -1,0 +1,26 @@
+# --- Dataset Management ---
+kagglehub
+
+# --- Audio & Image Processing ---
+librosa
+soundfile
+opencv-python
+Pillow
+
+# --- Data Science & Math ---
+numpy
+pandas
+scipy
+scikit-learn
+joblib
+
+# --- Deep Learning (CNN & LSTM) ---
+tensorflow>=2.10.0
+
+# --- Gradient Boosting (Specialist) ---
+xgboost
+
+# --- Visualization & Progress ---
+matplotlib
+seaborn
+tqdm

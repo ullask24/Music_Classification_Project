@@ -1,0 +1,33 @@
+# --- Virtual Environments ---
+.venv/
+env/
+venv/
+bin/
+lib/
+share/
+
+# --- Data & Features (Large Files) ---
+data/
+features/*.npy
+features/*.csv
+cache/
+
+# --- Models & Logs (Binary/Temporary) ---
+models/*.keras
+models/*.h5
+models/*.joblib
+logs/
+*.log
+output_*.txt
+error_*.txt
+
+# --- Python & System Garbage ---
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+.ipynb_checkpoints/
+
+# --- Results (Optional: Keep these if you want them on GitHub) ---
+# If you want to track your confusion matrices, comment the line below
+*.png
