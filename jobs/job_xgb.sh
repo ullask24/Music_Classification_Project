@@ -6,8 +6,9 @@
 #SBATCH --time=00:30:00
 #SBATCH --mem=16000
 #SBATCH --output=logs/xgb_%j.txt
-#SBATCH --error=logs/xgb_%j.txt
 
-cd ..
+module load devel/python/3.11
+cd ~/Music_Classification_Project
 source .venv/bin/activate
+
 python3 scripts/specialist_xgboost.py

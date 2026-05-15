@@ -5,8 +5,9 @@
 #SBATCH --time=00:20:00
 #SBATCH --mem=8000
 #SBATCH --output=logs/committee_%j.txt
-#SBATCH --error=logs/committee_%j.txt
 
-cd ..
+module load devel/python/3.11
+cd ~/Music_Classification_Project
 source .venv/bin/activate
+
 python3 scripts/committee_logic.py
