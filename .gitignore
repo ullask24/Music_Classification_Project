@@ -1,31 +1,34 @@
-dKk# --- Virtual Environments ---
-.venv/
-env/
-venv/
-bin/
-lib/
-share/
-
-# --- Data & Features (Large Files) ---
-data/
-features/*.npy
-features/*.csv
-cache/
-
-# --- Models & Logs (Binary/Temporary) ---
-models/*.keras
-models/*.h5
-models/*.joblib
-logs/
-*.log
-output_*.txt
-error_*.txt
-
-# --- Python & System Garbage ---
-__pycache__/
-*.py[cod]
-*$py.class
+# --- System Files ---
 .DS_Store
-.ipynb_checkpoints/
+__pycache__/
+.venv/
+.env
 
+# --- Data (DO NOT TRACK) ---
+# GTZAN is >1GB and will break GitHub pushes
+data/
+*.zip
+*.tar.gz
+*.au
+*.wav
 
+# --- Heavy ML Artifacts (DO NOT TRACK) ---
+# These are too big for standard Git
+*.keras
+*.h5
+*.weights
+*.joblib
+*.pkl
+
+# --- Results (DO NOT IGNORE) ---
+# We use the '!' to force-track these specific files/folders
+!logs/
+!features/
+!models/
+!final_report.txt
+!*.png
+!*.csv
+
+# Exceptions for within ignored folders
+# We want the CSV data and reports, but not the heavy .npy binaries if they get too big
+features/*.npy

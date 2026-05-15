@@ -1,0 +1,30 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1778841223.914631  212001 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1778841223.937572  212001 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1778841226.039949  212001 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1778841233.587440  212001 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1778841233.602904  212001 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/committee_logic.py", line 21, in <module>
+    resnet_model = tf.keras.models.load_model(os.path.join(MODEL_DIR, 'specialist_resnet.keras'))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/keras/src/saving/saving_api.py", line 212, in load_model
+    raise ValueError(
+ValueError: File not found: filepath=/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/models/specialist_resnet.keras. Please ensure the file is an accessible `.keras` zip file.
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n002
+Job ID: 4709679
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: FAILED (exit code 1)
+Nodes: 1
+Cores per node: 2
+CPU Utilized: 00:00:09
+CPU Efficiency: 7.14% of 00:02:06 core-walltime
+Job Wall-clock time: 00:01:03
+Memory Utilized: 513.57 MB
+Memory Efficiency: 6.42% of 7.81 GB (7.81 GB/node)

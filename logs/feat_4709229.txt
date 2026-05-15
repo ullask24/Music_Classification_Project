@@ -1,0 +1,17 @@
+/var/spool/slurmd/job4709229/slurm_script: line 12: .venv/bin/activate: No such file or directory
+python3: can't open file '/pfs/data6/home/ul/ul_student/ul_cxf44/scripts/feature_engineering.py': [Errno 2] No such file or directory
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n007
+Job ID: 4709229
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: FAILED (exit code 2)
+Nodes: 1
+Cores per node: 4
+CPU Utilized: 00:00:00
+CPU Efficiency: 0.00% of 00:01:04 core-walltime
+Job Wall-clock time: 00:00:16
+Memory Utilized: 34.55 MB
+Memory Efficiency: 0.22% of 15.62 GB (15.62 GB/node)
