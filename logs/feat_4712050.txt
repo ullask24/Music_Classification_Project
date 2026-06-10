@@ -1,0 +1,28 @@
+Starting feature extraction...
+Processing genre: blues
+Processing genre: classical
+Processing genre: country
+Processing genre: disco
+Processing genre: hiphop
+Processing genre: jazz
+Skipping jazz.00054.wav: 
+Processing genre: metal
+Processing genre: pop
+Processing genre: reggae
+Processing genre: rock
+Extraction finished. Saved 999 tracks.
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n020
+Job ID: 4712050
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 2
+CPU Utilized: 00:02:33
+CPU Efficiency: 42.74% of 00:05:58 core-walltime
+Job Wall-clock time: 00:02:59
+Memory Utilized: 236.84 MB
+Memory Efficiency: 1.48% of 15.62 GB (15.62 GB/node)

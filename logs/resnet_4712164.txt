@@ -1,0 +1,73 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1778847274.345614   99138 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1778847274.346234   99138 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1778847274.390910   99138 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1778847276.562921   99138 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1778847276.565746   99138 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1778847279.182314   99138 cuda_executor.cc:1737] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1778847279.182905   99158 cuda_executor.cc:1755] Failed to determine cuDNN version (Note that this is expected if the application doesn't link the cuDNN plugin): INTERNAL: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+W0000 00:00:1778847279.260485   99138 gpu_device.cc:2365] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+W0000 00:00:1778847280.192359   99138 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node StatefulPartitionedCall/functional_1/activation_1_2/Relu}}
+	.  Registered:  <no registered kernels>
+
+W0000 00:00:1778847280.192749   99138 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node StatefulPartitionedCall/functional_1/activation_1/Relu}}
+	.  Registered:  <no registered kernels>
+
+E0000 00:00:1778847280.195274   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-toposort,tfg-shape-inference{graph-version=0},tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node StatefulPartitionedCall/functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847280.199482   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node StatefulPartitionedCall/functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847280.199625   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node StatefulPartitionedCall/functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+W0000 00:00:1778847280.199873   99138 optimize_function_graph_utils.cc:634] Ignoring multi-device function optimization failure: INVALID_ARGUMENT: Node 'StatefulPartitionedCall/functional_1/activation_1/Relu' does not specify an operation
+W0000 00:00:1778847283.876646   99138 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1_2/Relu}}
+	.  Registered:  <no registered kernels>
+
+W0000 00:00:1778847283.877342   99138 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1/Relu}}
+	.  Registered:  <no registered kernels>
+
+E0000 00:00:1778847283.878311   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-toposort,tfg-shape-inference{graph-version=0},tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847283.879985   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847283.880071   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+W0000 00:00:1778847283.880197   99138 optimize_function_graph_utils.cc:634] Ignoring multi-device function optimization failure: INVALID_ARGUMENT: Node 'functional_1/activation_1/Relu' does not specify an operation
+[1m1/7[0m [32m━━[0m[37m━━━━━━━━━━━━━━━━━━[0m [1m0s[0m 39ms/stepW0000 00:00:1778847283.903484   99138 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1_2/Relu}}
+	.  Registered:  <no registered kernels>
+
+W0000 00:00:1778847283.903982   99138 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1/Relu}}
+	.  Registered:  <no registered kernels>
+
+E0000 00:00:1778847283.904885   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-toposort,tfg-shape-inference{graph-version=0},tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847283.906537   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847283.906622   99138 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+W0000 00:00:1778847283.906740   99138 optimize_function_graph_utils.cc:634] Ignoring multi-device function optimization failure: INVALID_ARGUMENT: Node 'functional_1/activation_1/Relu' does not specify an operation
+[1m7/7[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 6ms/step 
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n082
+Job ID: 4712164
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 48
+CPU Utilized: 00:00:12
+CPU Efficiency: 0.81% of 00:24:48 core-walltime
+Job Wall-clock time: 00:00:31
+Memory Utilized: 628.78 MB
+Memory Efficiency: 0.98% of 62.50 GB (62.50 GB/node)

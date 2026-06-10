@@ -1,0 +1,12 @@
+Total processed successfully: 999 tracks
+label
+blues        100
+classical    100
+country      100
+disco        100
+hiphop       100
+jazz          99
+metal        100
+pop          100
+reggae       100
+rock         100

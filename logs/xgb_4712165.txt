@@ -1,0 +1,15 @@
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n009
+Job ID: 4712165
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 2
+CPU Utilized: 00:00:03
+CPU Efficiency: 5.36% of 00:00:56 core-walltime
+Job Wall-clock time: 00:00:28
+Memory Utilized: 34.57 MB
+Memory Efficiency: 0.22% of 15.62 GB (15.62 GB/node)

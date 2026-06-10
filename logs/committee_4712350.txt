@@ -1,0 +1,52 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1778847840.156779 2661838 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1778847840.184871 2661838 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1778847842.304293 2661838 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1778847849.199095 2661838 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1778847849.213074 2661838 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1778847855.223884 2661838 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)
+[1m 1/32[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m10s[0m 326ms/step[1m32/32[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 5ms/step   [1m32/32[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 5ms/step
+W0000 00:00:1778847856.102020 2661838 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1_2/Relu}}
+	.  Registered:  <no registered kernels>
+
+W0000 00:00:1778847856.103254 2661838 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1/Relu}}
+	.  Registered:  <no registered kernels>
+
+E0000 00:00:1778847856.104303 2661838 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-toposort,tfg-shape-inference{graph-version=0},tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847856.105983 2661838 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847856.106078 2661838 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+W0000 00:00:1778847856.106215 2661838 optimize_function_graph_utils.cc:634] Ignoring multi-device function optimization failure: INVALID_ARGUMENT: Node 'functional_1/activation_1/Relu' does not specify an operation
+[1m 1/32[0m [37m━━━━━━━━━━━━━━━━━━━━[0m [1m1s[0m 38ms/stepW0000 00:00:1778847856.146839 2661838 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1_2/Relu}}
+	.  Registered:  <no registered kernels>
+
+W0000 00:00:1778847856.148130 2661838 graph_view.cc:850] No registered '' OpKernel for CPU devices compatible with node {{node functional_1/activation_1/Relu}}
+	.  Registered:  <no registered kernels>
+
+E0000 00:00:1778847856.149156 2661838 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-toposort,tfg-shape-inference{graph-version=0},tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847856.150867 2661838 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+E0000 00:00:1778847856.150959 2661838 tfg_optimizer_hook.cc:135] tfg_optimizer{any(tfg-consolidate-attrs,tfg-functional-to-region,tfg.func(tfg-cf-sink),tfg-region-to-functional{force-control-capture=true},tfg-lift-legacy-call,symbol-privatize{},symbol-dce,tfg-prepare-attrs-export)} failed: INVALID_ARGUMENT: Node functional_1/activation_1/Relu has an empty op name
+	when importing GraphDef to MLIR module in GrapplerHook
+W0000 00:00:1778847856.151103 2661838 optimize_function_graph_utils.cc:634] Ignoring multi-device function optimization failure: INVALID_ARGUMENT: Node 'functional_1/activation_1/Relu' does not specify an operation
+[1m32/32[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 2ms/step 
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n020
+Job ID: 4712350
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 2
+CPU Utilized: 00:00:08
+CPU Efficiency: 8.16% of 00:01:38 core-walltime
+Job Wall-clock time: 00:00:49
+Memory Utilized: 564.04 MB
+Memory Efficiency: 7.05% of 7.81 GB (7.81 GB/node)
