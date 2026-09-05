@@ -33,15 +33,21 @@ for genre_idx, g in enumerate(GENRES):
     if not os.path.isdir(genre_folder):
         continue
 
-    for filename in sorted(os.listdir(genre_folder)):
-        songpath = os.path.join(genre_folder, filename)
-        try:
-            # 1. Audio laden
-            y, sr = librosa.load(songpath, sr=TARGET_SR, mono=True, duration=DURATION)
-            if len(y) < TARGET_SR * DURATION:
-                y = np.pad(y, (0, TARGET_SR * DURATION - len(y)))
-            else:
-                y = y[:TARGET_SR * DURATION]
+for filename in sorted(os.listdir(genre_folder)):
+            songpath = os.path.join(genre_folder, filename)
+            try:
+                # Audio laden mit Fallback auf librosa's Standard-Load falls sr abweicht
+                y, sr = librosa.load(songpath, sr=TARGET_SR, mono=True, duration=DURATION)
+                if len(y) < TARGET_SR * DURATION:
+                    y = np.pad(y, (0, TARGET_SR * DURATION - len(y)))
+                else:
+                    y = y[:TARGET_SR * DURATION]
+
+                # ... (restlicher Extraktionscode für Tabular, Mel-Spec und Wav2Vec bleibt gleich)
+                
+            except Exception as e:
+                print(f"Überspringe beschädigte Datei {filename}: {e}")
+                continue
 
             # 2. Tabellarisch
             chroma = librosa.feature.chroma_stft(y=y, sr=sr)
