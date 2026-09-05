@@ -8,10 +8,11 @@
 #SBATCH --output=logs/dev_out_%j.txt
 #SBATCH --error=logs/dev_err_%j.txt
 
+# Korrigierte Module (nur Python und das verfügbare CUDA 12.8 laden)
 module load devel/python/3.11
-module load devel/cuda/12.1
-module load lib/cudnn/8.9
+module load devel/cuda/12.8
 
+# Arbeitsverzeichnis und Environment
 cd ${HOME}/Music_Classification_Project
 source .venv/bin/activate
 
