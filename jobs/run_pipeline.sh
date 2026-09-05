@@ -7,14 +7,22 @@
 #SBATCH --mem=32G
 #SBATCH --time=04:00:00
 #SBATCH --gres=gpu:1
-#SBATCH --partition=gpu
+#SBATCH --partition=dev_gpu_h100
 
-cd ..
+module load devel/python/3.11
+module load devel/cuda/12.1
+module load lib/cudnn/8.9
 
+cd ${HOME}/Music_Classification_Project
 source .venv/bin/activate
 
-python3 scripts/feature_engineering.py
+# 1. Parallele Extraktion aller 3 Daten-Typen
+python3 scripts/prepare_dataset.py
+
+# 2. Training der drei unabhängigen Experten
 python3 scripts/specialist_resnet.py
 python3 scripts/specialist_lstm.py
 python3 scripts/specialist_xgboost.py
+
+# 3. Ensemble Soft-Voting und Evaluation
 python3 scripts/committee_logic.py

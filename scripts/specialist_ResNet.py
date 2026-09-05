@@ -1,37 +1,62 @@
+import os
+import numpy as np
 import tensorflow as tf
-import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
-import os
 
-# Simplified ResNet-style block for 1D data
-def res_block(x, filters):
+X_spec = np.load("features/mel_spectrograms.npy")
+y = np.load("features/labels.npy")
+
+# Input-Dimension: (Samples, 128, 128, 1 Kanal)
+X_spec = np.expand_dims(X_spec, axis=-1)
+y_cat = tf.keras.utils.to_categorical(y, num_classes=10)
+
+X_train, X_test, y_train, y_test = train_test_split(X_spec, y_cat, test_size=0.2, random_state=42)
+
+def residual_block_2d(x, filters):
     shortcut = x
-    x = tf.keras.layers.Dense(filters, activation='relu')(x)
-    x = tf.keras.layers.Dense(filters)(x)
+    if x.shape[-1] != filters:
+        shortcut = tf.keras.layers.Conv2D(filters, (1, 1), padding="same")(shortcut)
+        shortcut = tf.keras.layers.BatchNormalization()(shortcut)
+
+    x = tf.keras.layers.Conv2D(filters, (3, 3), padding="same")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
+
+    x = tf.keras.layers.Conv2D(filters, (3, 3), padding="same")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+
     x = tf.keras.layers.Add()([x, shortcut])
-    return tf.keras.layers.Activation('relu')(x)
+    x = tf.keras.layers.ReLU()(x)
+    return x
 
-df = pd.read_csv('features/statistical_features.csv')
-X = df.drop('label', axis=1).values
-y = pd.get_dummies(df['label']).values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+inputs = tf.keras.Input(shape=(128, 128, 1))
+x = tf.keras.layers.Conv2D(32, (7, 7), strides=2, padding="same")(inputs)
+x = tf.keras.layers.BatchNormalization()(x)
+x = tf.keras.layers.ReLU()(x)
+x = tf.keras.layers.MaxPooling2D((3, 3), strides=2, padding="same")(x)
 
-inputs = tf.keras.Input(shape=(26,))
-x = tf.keras.layers.Dense(64, activation='relu')(inputs)
-x = res_block(x, 64)
-x = res_block(x, 64)
-outputs = tf.keras.layers.Dense(10, activation='softmax')(x)
+x = residual_block_2d(x, 32)
+x = residual_block_2d(x, 64)
+x = tf.keras.layers.MaxPooling2D((2, 2))(x)
+x = residual_block_2d(x, 128)
+
+x = tf.keras.layers.GlobalAveragePooling2D()(x)
+x = tf.keras.layers.Dropout(0.4)(x)
+outputs = tf.keras.layers.Dense(10, activation="softmax")(x)
 
 model = tf.keras.Model(inputs, outputs)
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
-history = model.fit(X_train, y_train, validation_split=0.1, epochs=50, verbose=0)
+model.fit(X_train, y_train, validation_split=0.1, epochs=30, batch_size=32, verbose=1)
 
-# Logging
-pd.DataFrame(history.history).to_csv('logs/resnet_training_metrics.csv', index=False)
+os.makedirs("models", exist_ok=True)
+os.makedirs("logs", exist_ok=True)
+
+model.save("models/resnet_specialist.keras")
 y_pred = model.predict(X_test).argmax(axis=1)
-with open('logs/resnet_report.txt', 'w') as f:
-    f.write(classification_report(y_test.argmax(axis=1), y_pred))
+report = classification_report(y_test.argmax(axis=1), y_pred)
+with open("logs/resnet_report.txt", "w") as f:
+    f.write(report)
 
-model.save('models/resnet_specialist.keras')
+print("ResNet erfolgreich trainiert und gespeichert.")
