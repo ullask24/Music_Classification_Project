@@ -17,6 +17,10 @@ joblib
 # --- Deep Learning (CNN & LSTM) ---
 tensorflow>=2.10.0
 
+# --- Deep Learning (Wav2Vec 2.0 Feature Extraction) ---
+torch
+torchaudio
+
 # --- Gradient Boosting (Specialist) ---
 xgboost
 
