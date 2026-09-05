@@ -1,0 +1,18 @@
+=== STARTE DEV PIPELINE TESTLAUF AUF DEV GPU ===
+[1/5] Teste Feature Extraktion...
+Fehler in prepare_dataset.py
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n082
+Job ID: 6808987
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: FAILED (exit code 1)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:02
+CPU Efficiency: 1.04% of 00:03:12 core-walltime
+Job Wall-clock time: 00:00:24
+Memory Utilized: 34.71 MB
+Memory Efficiency: 0.11% of 32.00 GB (32.00 GB/node)

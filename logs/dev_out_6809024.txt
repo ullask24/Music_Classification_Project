@@ -1,0 +1,23 @@
+=== STARTE DEV PIPELINE TESTLAUF AUF DEV GPU ===
+[1/5] Teste Feature Extraktion...
+Downloading: "https://download.pytorch.org/torchaudio/models/wav2vec2_fairseq_base_ls960.pth" to /home/ul/ul_student/ul_cxf44/.cache/torch/hub/checkpoints/wav2vec2_fairseq_base_ls960.pth
+Starte multimodale Feature-Extraktion...
+Überspringe jazz.00054.wav: 
+Extraktion abgeschlossen! 999 Tracks verarbeitet.
+[2/5] Teste ResNet...
+Fehler in specialist_resnet.py
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n082
+Job ID: 6809024
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: FAILED (exit code 1)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:01:54
+CPU Efficiency: 9.08% of 00:20:56 core-walltime
+Job Wall-clock time: 00:02:37
+Memory Utilized: 5.34 GB
+Memory Efficiency: 16.70% of 32.00 GB (32.00 GB/node)

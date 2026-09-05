@@ -1,0 +1,22 @@
+Unable to load any of {libcudnn_engines_runtime_compiled.so.9.24.0, libcudnn_engines_runtime_compiled.so.9.24, libcudnn_engines_runtime_compiled.so.9, libcudnn_engines_runtime_compiled.so}.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788629127.857008 1015212 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788629129.576061 1015212 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788629134.546690 1015212 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/specialist_resnet.py", line 14, in <module>
+    X_train, X_test, y_train, y_test = train_test_split(X_spec, y_cat, test_size=0.2, random_state=42)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/utils/_param_validation.py", line 218, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/model_selection/_split.py", line 2921, in train_test_split
+    arrays = indexable(*arrays)
+             ^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 521, in indexable
+    check_consistent_length(*result)
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/utils/validation.py", line 464, in check_consistent_length
+    raise ValueError(
+ValueError: Found input variables with inconsistent numbers of samples: [999, 0]

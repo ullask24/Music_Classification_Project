@@ -1,0 +1,26 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"devel/cuda/12.1"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "devel/cuda/12.1"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"lib/cudnn/8.9"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "lib/cudnn/8.9"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+  0%|          | 0.00/360M [00:00<?, ?B/s]  3%|▎         | 10.2M/360M [00:00<00:03, 107MB/s]  6%|▌         | 21.2M/360M [00:00<00:03, 111MB/s]  9%|▉         | 32.1M/360M [00:00<00:03, 111MB/s] 12%|█▏        | 43.5M/360M [00:00<00:02, 114MB/s] 15%|█▌        | 54.5M/360M [00:00<00:02, 114MB/s] 18%|█▊        | 65.5M/360M [00:00<00:02, 114MB/s] 21%|██        | 76.5M/360M [00:00<00:02, 114MB/s] 24%|██▍       | 87.5M/360M [00:00<00:02, 114MB/s] 27%|██▋       | 98.5M/360M [00:00<00:02, 114MB/s] 30%|███       | 110M/360M [00:01<00:02, 114MB/s]  33%|███▎      | 120M/360M [00:01<00:02, 114MB/s] 37%|███▋      | 132M/360M [00:01<00:02, 114MB/s] 40%|███▉      | 142M/360M [00:01<00:01, 114MB/s] 43%|████▎     | 154M/360M [00:01<00:01, 114MB/s] 46%|████▌     | 164M/360M [00:01<00:01, 114MB/s] 49%|████▊     | 176M/360M [00:01<00:01, 114MB/s] 52%|█████▏    | 186M/360M [00:01<00:01, 114MB/s] 55%|█████▍    | 198M/360M [00:01<00:01, 114MB/s] 58%|█████▊    | 208M/360M [00:01<00:01, 114MB/s] 61%|██████    | 220M/360M [00:02<00:01, 114MB/s] 64%|██████▍   | 230M/360M [00:02<00:01, 114MB/s] 67%|██████▋   | 242M/360M [00:02<00:01, 114MB/s] 70%|███████   | 252M/360M [00:02<00:00, 114MB/s] 73%|███████▎  | 264M/360M [00:02<00:00, 114MB/s] 76%|███████▌  | 274M/360M [00:02<00:00, 114MB/s] 79%|███████▉  | 286M/360M [00:02<00:00, 114MB/s] 82%|████████▏ | 296M/360M [00:02<00:00, 114MB/s] 85%|████████▌ | 308M/360M [00:02<00:00, 114MB/s] 88%|████████▊ | 318M/360M [00:02<00:00, 114MB/s] 92%|█████████▏| 330M/360M [00:03<00:00, 114MB/s] 95%|█████████▍| 340M/360M [00:03<00:00, 114MB/s] 98%|█████████▊| 352M/360M [00:03<00:00, 114MB/s]100%|██████████| 360M/360M [00:03<00:00, 114MB/s]
+python3: can't open file '/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/specialist_resnet.py': [Errno 2] No such file or directory

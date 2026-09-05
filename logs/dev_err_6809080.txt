@@ -1,0 +1,75 @@
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/librosa/core/audio.py", line 176, in load
+    y, sr_native = __soundfile_load(path, offset, duration, dtype)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/librosa/core/audio.py", line 209, in __soundfile_load
+    context = sf.SoundFile(path)
+              ^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/soundfile.py", line 690, in __init__
+    self._file = self._open(file, mode_int, closefd)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/soundfile.py", line 1265, in _open
+    raise LibsndfileError(err, prefix="Error opening {0!r}: ".format(self.name))
+soundfile.LibsndfileError: Error opening 'data/gtzan/jazz/jazz.00054.wav': Format not recognised.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/prepare_dataset.py", line 40, in <module>
+    y, sr = librosa.load(songpath, sr=TARGET_SR, mono=True, duration=DURATION)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/librosa/core/audio.py", line 184, in load
+    y, sr_native = __audioread_load(path, offset, duration, dtype)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/decorator.py", line 235, in fun
+    return caller(func, *(extras + args), **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/librosa/util/decorators.py", line 63, in __wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/librosa/core/audio.py", line 240, in __audioread_load
+    reader = audioread.audio_open(path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/audioread/__init__.py", line 131, in audio_open
+    raise NoBackendError()
+audioread.exceptions.NoBackendError
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788630288.523999 1073752 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788630290.258652 1073752 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788630295.085200 1073752 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788630301.606509 1073752 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 92966 MB memory:  -> device: 0, name: NVIDIA H100, pci bus id: 0000:06:00.0, compute capability: 9.0a
+I0000 00:00:1788630306.169454 1077004 service.cc:153] XLA service 0x1499800489a0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788630306.169550 1077004 service.cc:161]   StreamExecutor [0]: NVIDIA H100, Compute Capability 9.0a (Driver: 13.2.0; Runtime: 12.8.0; Toolkit: 12.5.0; DNN: 9.7.1)
+I0000 00:00:1788630306.344899 1077004 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788630306.963057 1077004 cuda_dnn.cc:461] Loaded cuDNN version 90701
+I0000 00:00:1788630307.076891 1077004 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_7724__.95
+I0000 00:00:1788630317.558676 1077004 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788630318.153759 1077006 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_7724__.95
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788630337.091143 1080141 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788630337.144248 1080141 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788630339.182305 1080141 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788630341.846152 1080141 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 92966 MB memory:  -> device: 0, name: NVIDIA H100, pci bus id: 0000:06:00.0, compute capability: 9.0a
+I0000 00:00:1788630344.417630 1080208 cuda_dnn.cc:461] Loaded cuDNN version 90701
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788630370.174570 1082134 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788630370.224798 1082134 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788630372.205183 1082134 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788630376.040720 1082134 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 92966 MB memory:  -> device: 0, name: NVIDIA H100, pci bus id: 0000:06:00.0, compute capability: 9.0a
+I0000 00:00:1788630377.479398 1082162 cuda_dnn.cc:461] Loaded cuDNN version 90701
+I0000 00:00:1788630377.913306 1082160 service.cc:153] XLA service 0x145ac4035940 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788630377.913409 1082160 service.cc:161]   StreamExecutor [0]: NVIDIA H100, Compute Capability 9.0a (Driver: 13.2.0; Runtime: 12.8.0; Toolkit: 12.5.0; DNN: 9.7.1)
+I0000 00:00:1788630377.923389 1082160 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788630380.380871 1082160 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.

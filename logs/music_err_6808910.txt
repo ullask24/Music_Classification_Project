@@ -1,0 +1,61 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"devel/cuda/12.1"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "devel/cuda/12.1"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"lib/cudnn/8.9"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore_cache load "lib/cudnn/8.9"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/prepare_dataset.py", line 6, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+python3: can't open file '/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/specialist_resnet.py': [Errno 2] No such file or directory
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788628086.915043 3929147 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788628086.932196 3929147 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1788628088.569662 3929147 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788628094.195611 3929147 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788628094.208137 3929147 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/specialist_lstm.py", line 7, in <module>
+    X_seq = np.load("features/wav2vec_sequences.npy")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'features/wav2vec_sequences.npy'
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788628104.353159 3929197 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788628104.353768 3929197 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1788628104.399737 3929197 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788628106.358461 3929197 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788628106.361337 3929197 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/committee_logic.py", line 15, in <module>
+    y = np.load("features/labels.npy")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'features/labels.npy'
