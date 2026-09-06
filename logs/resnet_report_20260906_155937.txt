@@ -1,0 +1,20 @@
+--- RESNET SPECIALIST EXPERIMENT (20260906_155937) ---
+VERÄNDERUNGEN: Reduzierte Initiale Lernrate (0.0001), erhöhte Early-Stopping-Patience (15).
+ZIELE: Verhinderung des Trainingskollapses (Loss-Divergenz) und Steigerung der ResNet-Genauigkeit.
+
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00        21
+           1       0.00      0.00      0.00        12
+           2       0.00      0.00      0.00        24
+           3       0.00      0.00      0.00        22
+           4       0.00      0.00      0.00        15
+           5       0.00      0.00      0.00        27
+           6       0.00      0.00      0.00        18
+           7       0.00      0.00      0.00        19
+           8       0.00      0.00      0.00        22
+           9       0.10      1.00      0.18        20
+
+    accuracy                           0.10       200
+   macro avg       0.01      0.10      0.02       200
+weighted avg       0.01      0.10      0.02       200

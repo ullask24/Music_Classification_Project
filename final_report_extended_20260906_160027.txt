@@ -1,0 +1,23 @@
+--- ENSEMBLE EXPERIMENT (GEWICHTETES SOFT-VOTING) ---
+Zeitpunkt: 20260906_160027
+VERÄNDERUNGEN: Gewichtung angepasst (XGBoost: 0.45, LSTM: 0.45, ResNet: 0.1)
+ZIELE: Bessere Kompensation schwächerer Modelle und Maximierung der Ensemble-Accuracy.
+
+FINAL ENSEMBLE ACCURACY: 76.50%
+
+              precision    recall  f1-score   support
+
+       blues       0.74      0.81      0.77        21
+   classical       0.80      1.00      0.89        12
+     country       0.75      0.75      0.75        24
+       disco       0.81      0.59      0.68        22
+      hiphop       0.57      0.87      0.68        15
+        jazz       0.96      0.96      0.96        27
+       metal       0.74      0.94      0.83        18
+         pop       0.94      0.79      0.86        19
+      reggae       0.88      0.64      0.74        22
+        rock       0.47      0.40      0.43        20
+
+    accuracy                           0.77       200
+   macro avg       0.77      0.78      0.76       200
+weighted avg       0.78      0.77      0.76       200
