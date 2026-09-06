@@ -5,7 +5,6 @@ import pandas as pd
 import librosa
 import torch
 import torchaudio
-import traceback
 
 warnings.filterwarnings("ignore")
 
@@ -15,7 +14,6 @@ TARGET_SR = 16000
 DURATION = 30
 FIXED_SPEC_WIDTH = 128
 
-# GPU ist nun fehlerfrei aktiv
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 bundle = torchaudio.pipelines.WAV2VEC2_BASE
 w2v_model = bundle.get_model().to(device)
@@ -27,7 +25,7 @@ sequential_features = []
 labels = []
 
 os.makedirs("features", exist_ok=True)
-print("Starte multimodale Feature-Extraktion auf Gerät:", device)
+print("Starte erweiterte multimodale Feature-Extraktion auf Gerät:", device)
 
 for genre_idx, g in enumerate(GENRES):
     genre_folder = os.path.join(DATA_PATH, g)
@@ -44,14 +42,21 @@ for genre_idx, g in enumerate(GENRES):
             else:
                 y = y[:TARGET_SR * DURATION]
 
-            # 2. Tabellarische Features
-            chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+            # NEU: HPSS (Trennung in harmonisch und perkussiv)
+            y_harmonic, y_percussive = librosa.effects.hpss(y)
+
+            # 2. Erweiterte tabellarische Features
+            chroma = librosa.feature.chroma_stft(y=y_harmonic, sr=sr)
             rmse = librosa.feature.rms(y=y)
             spec_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
             spec_bw = librosa.feature.spectral_bandwidth(y=y, sr=sr)
             rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
             zcr = librosa.feature.zero_crossing_rate(y)
             mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)
+            
+            # NEU: Spectral Contrast & Tonnetz für tonale/strukturelle Schärfe
+            spec_contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
+            tonnetz = librosa.feature.tonnetz(y=y_harmonic, sr=sr)
 
             temp_row = [
                 np.mean(chroma), np.mean(rmse), np.mean(spec_cent),
@@ -59,6 +64,13 @@ for genre_idx, g in enumerate(GENRES):
             ]
             for m in mfcc:
                 temp_row.append(np.mean(m))
+            
+            # NEU: Neue Features anfügen
+            for sc in spec_contrast:
+                temp_row.append(np.mean(sc))
+            for tn in tonnetz:
+                temp_row.append(np.mean(tn))
+                
             temp_row.append(g)
 
             # 3. Mel-Spektrogramm
@@ -71,11 +83,7 @@ for genre_idx, g in enumerate(GENRES):
             waveform = torch.tensor(y, dtype=torch.float32).unsqueeze(0).to(device)
             with torch.no_grad():
                 out = w2v_model.extract_features(waveform)
-                if isinstance(out, tuple):
-                    latent_seq = out[0]
-                else:
-                    latent_seq = out
-                
+                latent_seq = out[0] if isinstance(out, tuple) else out
                 rep = latent_seq[-1].squeeze(0).cpu().numpy()
                 
                 step = max(1, rep.shape[0] // 100)
@@ -83,7 +91,6 @@ for genre_idx, g in enumerate(GENRES):
                 if temp_seq.shape[0] < 100:
                     temp_seq = np.pad(temp_seq, ((0, 100 - temp_seq.shape[0]), (0, 0)))
 
-            # Erst wenn alle Schritte fehlerfrei durchlaufen sind, anhängen
             tabular_rows.append(temp_row)
             spectrograms.append(temp_spec)
             sequential_features.append(temp_seq)
@@ -93,9 +100,13 @@ for genre_idx, g in enumerate(GENRES):
             print(f"Überspringe Datei {filename} wegen Fehler: {e}")
             continue
 
-# Ergebnisse abspeichern
+# Dynamische Spaltennamen generieren
 col_names = "chroma_stft rmse spectral_centroid spectral_bandwidth rolloff zcr".split()
-col_names += [f"mfcc{i}" for i in range(1, 21)] + ["label"]
+col_names += [f"mfcc{i}" for i in range(1, 21)]
+col_names += [f"spec_contrast_{i}" for i in range(spec_contrast.shape[0])]
+col_names += [f"tonnetz_{i}" for i in range(tonnetz.shape[0])]
+col_names += ["label"]
+
 df_tabular = pd.DataFrame(tabular_rows, columns=col_names)
 df_tabular.to_csv("features/statistical_features.csv", index=False)
 
@@ -103,4 +114,4 @@ np.save("features/mel_spectrograms.npy", np.array(spectrograms, dtype=np.float32
 np.save("features/wav2vec_sequences.npy", np.array(sequential_features, dtype=np.float32))
 np.save("features/labels.npy", np.array(labels, dtype=np.int64))
 
-print(f"Extraktion erfolgreich beendet! {len(labels)} Tracks verarbeitet.")
+print(f"Erweiterte Extraktion beendet! {len(labels)} Tracks verarbeitet.")
