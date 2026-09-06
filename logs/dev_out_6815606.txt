@@ -1,2 +1,17 @@
 === STARTE DEV PIPELINE TESTLAUF AUF DEV GPU ===
 [1/5] Teste Feature Extraktion...
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n082
+Job ID: 6815606
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: TIMEOUT (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:00
+CPU Efficiency: 0.00% of 04:02:32 core-walltime
+Job Wall-clock time: 00:30:19
+Memory Utilized: 8.93 GB
+Memory Efficiency: 27.90% of 32.00 GB (32.00 GB/node)
