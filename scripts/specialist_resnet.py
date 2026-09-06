@@ -1,4 +1,5 @@
 import os
+import datetime
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
@@ -7,7 +8,6 @@ from sklearn.metrics import classification_report
 X_spec = np.load("features/mel_spectrograms.npy")
 y = np.load("features/labels.npy")
 
-# Input-Dimension: (Samples, 128, 128, 1 Kanal)
 X_spec = np.expand_dims(X_spec, axis=-1)
 y_cat = tf.keras.utils.to_categorical(y, num_classes=10)
 
@@ -46,9 +46,27 @@ x = tf.keras.layers.Dropout(0.4)(x)
 outputs = tf.keras.layers.Dense(10, activation="softmax")(x)
 
 model = tf.keras.Model(inputs, outputs)
-model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), 
+              loss="categorical_crossentropy", 
+              metrics=["accuracy"])
 
-model.fit(X_train, y_train, validation_split=0.1, epochs=30, batch_size=32, verbose=1)
+# Callbacks für dynamische Lernraten-Anpassung und Stopp bei Stagnation
+lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(
+    monitor='val_loss', factor=0.5, patience=4, min_lr=1e-5, verbose=1
+)
+early_stopping = tf.keras.callbacks.EarlyStopping(
+    monitor='val_loss', patience=10, restore_best_weights=True, verbose=1
+)
+
+# Erhöhte Epochenanzahl
+model.fit(
+    X_train, y_train, 
+    validation_split=0.1, 
+    epochs=60, 
+    batch_size=32, 
+    callbacks=[lr_scheduler, early_stopping],
+    verbose=1
+)
 
 os.makedirs("models", exist_ok=True)
 os.makedirs("logs", exist_ok=True)
@@ -56,7 +74,13 @@ os.makedirs("logs", exist_ok=True)
 model.save("models/resnet_specialist.keras")
 y_pred = model.predict(X_test).argmax(axis=1)
 report = classification_report(y_test.argmax(axis=1), y_pred)
-with open("logs/resnet_report.txt", "w") as f:
+
+# Versionssichere Protokollierung mit Zeitstempel
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+report_filename = f"logs/resnet_report_{timestamp}.txt"
+
+with open(report_filename, "w") as f:
+    f.write(f"--- RESNET SPECIALIST EXPERIMENT ({timestamp}) ---\n")
     f.write(report)
 
-print("ResNet erfolgreich trainiert und gespeichert.")
+print(f"ResNet erfolgreich trainiert. Bericht gespeichert unter: {report_filename}")
