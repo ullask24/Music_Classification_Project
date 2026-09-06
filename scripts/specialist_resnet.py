@@ -46,19 +46,18 @@ x = tf.keras.layers.Dropout(0.4)(x)
 outputs = tf.keras.layers.Dense(10, activation="softmax")(x)
 
 model = tf.keras.Model(inputs, outputs)
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), 
+# VERÄNDERUNG: Kleinere Lernrate (0.0001) zur Stabilisierung des Trainings
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), 
               loss="categorical_crossentropy", 
               metrics=["accuracy"])
 
-# Callbacks für dynamische Lernraten-Anpassung und Stopp bei Stagnation
 lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(
-    monitor='val_loss', factor=0.5, patience=4, min_lr=1e-5, verbose=1
+    monitor='val_loss', factor=0.5, patience=6, min_lr=1e-6, verbose=1
 )
 early_stopping = tf.keras.callbacks.EarlyStopping(
-    monitor='val_loss', patience=10, restore_best_weights=True, verbose=1
+    monitor='val_loss', patience=15, restore_best_weights=True, verbose=1
 )
 
-# Erhöhte Epochenanzahl
 model.fit(
     X_train, y_train, 
     validation_split=0.1, 
@@ -75,12 +74,13 @@ model.save("models/resnet_specialist.keras")
 y_pred = model.predict(X_test).argmax(axis=1)
 report = classification_report(y_test.argmax(axis=1), y_pred)
 
-# Versionssichere Protokollierung mit Zeitstempel
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 report_filename = f"logs/resnet_report_{timestamp}.txt"
 
 with open(report_filename, "w") as f:
     f.write(f"--- RESNET SPECIALIST EXPERIMENT ({timestamp}) ---\n")
+    f.write("VERÄNDERUNGEN: Reduzierte Initiale Lernrate (0.0001), erhöhte Early-Stopping-Patience (15).\n")
+    f.write("ZIELE: Verhinderung des Trainingskollapses (Loss-Divergenz) und Steigerung der ResNet-Genauigkeit.\n\n")
     f.write(report)
 
 print(f"ResNet erfolgreich trainiert. Bericht gespeichert unter: {report_filename}")
