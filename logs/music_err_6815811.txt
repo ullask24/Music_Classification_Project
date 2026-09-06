@@ -1,0 +1,45 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788712158.852733 1827821 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788712160.572305 1827821 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788712166.182318 1827821 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788712174.489469 1827821 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 92966 MB memory:  -> device: 0, name: NVIDIA H100, pci bus id: 0000:26:00.0, compute capability: 9.0a
+I0000 00:00:1788712183.264850 1827918 service.cc:153] XLA service 0x14968807a7c0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788712183.265715 1827918 service.cc:161]   StreamExecutor [0]: NVIDIA H100, Compute Capability 9.0a (Driver: 13.2.0; Runtime: 12.8.0; Toolkit: 12.5.0; DNN: 9.7.1)
+I0000 00:00:1788712183.458949 1827918 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788712184.516478 1827918 cuda_dnn.cc:461] Loaded cuDNN version 90701
+I0000 00:00:1788712184.611296 1827918 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_10752__.185
+I0000 00:00:1788712190.358280 1827918 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788712191.510498 1827915 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_10752__.185
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788712223.748040 1833860 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788712223.800119 1833860 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788712225.801483 1833860 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788712228.868234 1833860 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 92966 MB memory:  -> device: 0, name: NVIDIA H100, pci bus id: 0000:26:00.0, compute capability: 9.0a
+I0000 00:00:1788712231.483658 1833919 cuda_dnn.cc:461] Loaded cuDNN version 90701
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788712262.670710 1838381 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788712262.721970 1838381 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788712264.658679 1838381 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788712267.545738 1838381 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 92966 MB memory:  -> device: 0, name: NVIDIA H100, pci bus id: 0000:26:00.0, compute capability: 9.0a
+I0000 00:00:1788712269.764816 1838442 cuda_dnn.cc:461] Loaded cuDNN version 90701
+Traceback (most recent call last):
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/scripts/committee_logic.py", line 41, in <module>
+    p_resnet = resnet_model.predict(X_spec_test)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/keras/src/utils/traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/pfs/data6/home/ul/ul_student/ul_cxf44/Music_Classification_Project/.venv/lib/python3.11/site-packages/keras/src/layers/input_spec.py", line 245, in assert_input_compatibility
+    raise ValueError(
+ValueError: Input 0 with name 'input_layer_1' of layer 'functional' is incompatible with the layer: expected shape=(None, 128, 128, 3), found shape=(32, 128, 128, 1)
