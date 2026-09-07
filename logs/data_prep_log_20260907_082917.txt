@@ -1,0 +1,10 @@
+--- DATA PREPARATION & AUGMENTATION LOG (20260907_082917) ---
+VERÄNDERUNGEN:
+1. Integration von Harmonic-Percussive Source Separation (HPSS).
+2. Hinzufügen von 7 Spectral-Contrast-Bändern und 6 Tonnetz-Dimensionen.
+3. Data Augmentation: Pitch-Shifting (+2 Halbtöne) und Time-Stretching (Faktor 1.05).
+
+ZIELE:
+- Verdreifachung des Trainingsdatensatzes zur Erhöhung der Modellrobustheit.
+- Gezielte Verbesserung der Erkennungsrate bei akustisch dichten Problemgenres (wie Rock).
+- Generierte Gesamt-Tracks (inkl. Augmentierung): 2997
