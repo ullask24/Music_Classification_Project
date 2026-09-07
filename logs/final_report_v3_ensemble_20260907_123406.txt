@@ -1,0 +1,25 @@
+--- FINALES ENSEMBLE EXPERIMENT V3 (20260907_123406) ---
+VERÄNDERUNGEN & EVIDENZ:
+1. Integration des BiLSTM-Spezialisten (Accuracy von 71% auf 91% gesteigert)[cite: 4].
+2. Integration des Deep Fine-Tuned ResNet50 (Accuracy von 35% auf 83% gesteigert)[cite: 8].
+3. Bewährter XGBoost-Spezialist als stabiles Fundament (82% Accuracy).
+4. Angepasste Soft-Voting-Gewichte (XGB: 0.25, BiLSTM: 0.45, ResNet: 0.30).
+
+ERZIELTE GESAMT-ACCURACY: 94.50%
+
+              precision    recall  f1-score   support
+
+           0       1.00      0.93      0.96        73
+           1       1.00      1.00      1.00        69
+           2       0.86      0.98      0.92        58
+           3       0.82      0.92      0.86        59
+           4       0.96      0.91      0.93        53
+           5       0.98      1.00      0.99        51
+           6       0.98      0.98      0.98        56
+           7       0.95      0.95      0.95        57
+           8       0.95      0.93      0.94        58
+           9       0.97      0.86      0.91        66
+
+    accuracy                           0.94       600
+   macro avg       0.95      0.95      0.95       600
+weighted avg       0.95      0.94      0.95       600

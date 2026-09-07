@@ -1,0 +1,21 @@
+=== STARTE FINALES ENSEMBLE V3 AUF DEV H100 GPU ===
+=== STARTE FINALES ENSEMBLE V3 (BILSTM + DEEP RESNET + XGB) ===
+Lade optimierte Spezialisten...
+FINAL V3 ENSEMBLE ACCURACY: 94.50%
+Erfolgreich dokumentiert in: logs/final_report_v3_ensemble_20260907_123406.txt
+=== V3 ENSEMBLE ERFOLGREICH BEENDET ===
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n082
+Job ID: 6819768
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:55
+CPU Efficiency: 9.96% of 00:09:12 core-walltime
+Job Wall-clock time: 00:01:09
+Memory Utilized: 6.31 GB
+Memory Efficiency: 19.73% of 32.00 GB (32.00 GB/node)
