@@ -1,44 +1,40 @@
 import os
+import joblib
 import datetime
 import numpy as np
 import tensorflow as tf
-import joblib
+import xgboost as xgb
+import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+print("=== STARTE COMMITTEE LOGIC / SOFT-VOTING ===")
+
 # 1. Testdaten laden
-print("Lade Testdaten für das Ensemble...")
-X_tab = pd.read_csv("features/statistical_features.csv") if 'pd' in globals() else None
-# Falls pandas nicht global geladen ist, alternativ:
-import pandas as pd
 X_tab = pd.read_csv("features/statistical_features.csv")
 y = np.load("features/labels.npy")
-
 X_spec = np.load("features/mel_spectrograms.npy")
 X_seq = np.load("features/wav2vec_sequences.npy")
-
-# Entsprechenden Test-Split wie im Training herstellen (z.B. letztes Split-Verhältnis)
-from sklearn.model_selection import train_test_split
 
 _, X_tab_test, _, X_spec_test, _, X_seq_test, _, y_test = train_test_split(
     X_tab.drop(columns=["label"]), X_spec, X_seq, y, test_size=0.2, random_state=42
 )
 
-# Tabellarische Features skalieren (falls Scaler vorhanden ist)
-scaler = joblib.load("models/scaler.pkl") if os.path.exists("models/scaler.pkl") else None
-if scaler:
-    X_tab_test_scaled = scaler.transform(X_tab_test)
-else:
-    X_tab_test_scaled = X_tab_test
+# Scaler laden (.joblib) und tabellarische Testdaten skalieren
+scaler = joblib.load("models/scaler.joblib") if os.path.exists("models/scaler.joblib") else None
+X_tab_test_scaled = scaler.transform(X_tab_test) if scaler else X_tab_test
 
-# WICHTIG: ResNet erwartet 3 Kanäle (RGB-Duplikation der Spektrogramme)
+# ResNet-Testdaten auf 3 Kanäle (RGB-Duplikation) erweitern
 if X_spec_test.shape[-1] != 3:
     X_spec_test = np.repeat(X_spec_test, 3, axis=-1)
 
 # 2. Modelle laden
 print("Lade trainierte Einzelspezialisten...")
-xgb_model = joblib.load("models/xgb_specialist.pkl")
+xgb_model = xgb.XGBClassifier()
+xgb_model.load_model("models/xgb_specialist.json")
+
 lstm_model = tf.keras.models.load_model("models/lstm_specialist.keras")
 resnet_model = tf.keras.models.load_model("models/resnet_specialist.keras")
 
@@ -70,7 +66,7 @@ with open(report_filename, "w") as f:
 
 print(f"Ensemble-Auswertung beendet! Accuracy: {acc * 100:.2f}%. Bericht: {report_filename}")
 
-# 6. Konfusionsmatrix visualisieren und speichern
+# 6. Konfusionsmatrix visualisieren und im Hauptverzeichnis speichern
 cm = confusion_matrix(y_test, y_pred)
 plt.figure(figsize=(10, 8))
 sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=range(10), yticklabels=range(10))
@@ -79,3 +75,5 @@ plt.xlabel("Predicted Genre")
 plt.ylabel("True Genre")
 plt.savefig(f"ensemble_confusion_matrix_extended_{timestamp}.png")
 plt.close()
+
+print(f"Konfusionsmatrix erfolgreich gespeichert als: ensemble_confusion_matrix_extended_{timestamp}.png")
