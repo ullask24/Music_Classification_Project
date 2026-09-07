@@ -90,6 +90,15 @@ def run_live_inference(file_path):
         p_xgb = xgb_model.predict_proba(X_tab_scaled)
         p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
         p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
+
+        p_xgb = xgb_model.predict_proba(X_tab_scaled)
+        p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
+        p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
+        
+        # Diagnose: Zeige, was die einzelnen Modelle sagen
+        print(f"  -> XGB (Top): {GENRES[p_xgb.argmax()]} ({p_xgb.max()*100:.1f}%)")
+        print(f"  -> LSTM (Top): {GENRES[p_lstm.argmax()]} ({p_lstm.max()*100:.1f}%)")
+        print(f"  -> ResNet (Top): {GENRES[p_resnet.argmax()]} ({p_resnet.max()*100:.1f}%)")
         
         p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
         probabilities.append(p_ensemble[0])
