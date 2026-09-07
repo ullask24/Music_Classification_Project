@@ -94,12 +94,17 @@ def evaluate_gtzan():
             p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
             p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
             
+            # Diagnose pro Datei zur Identifikation des fehlerhaften Modells
+            print(f"  -> XGB Top: {GENRES[p_xgb.argmax()]} ({p_xgb.max()*100:.1f}%)")
+            print(f"  -> LSTM Top: {GENRES[p_lstm.argmax()]} ({p_lstm.max()*100:.1f}%)")
+            print(f"  -> ResNet Top: {GENRES[p_resnet.argmax()]} ({p_resnet.max()*100:.1f}%)")
+            
             p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
             pred_idx = p_ensemble.argmax()
             
             y_true.append(GENRES.index(genre))
             y_pred.append(pred_idx)
-            print(f"[{genre}] {file} -> Vorhersage: {GENRES[pred_idx]} (Echt: {genre})")
+            print(f"[{genre}] {file} -> Vorhersage: {GENRES[pred_idx]} (Echt: {genre})\n")
 
     if len(y_true) > 0:
         acc = accuracy_score(y_true, y_pred)
