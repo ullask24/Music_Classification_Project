@@ -1,9 +1,13 @@
 import sys
+import os
 import numpy as np
 import tensorflow as tf
 import xgboost as xgb
 import joblib
 import librosa
+
+# Absoluten Basis-Projektpfad ermitteln
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
 
@@ -11,16 +15,16 @@ def process_live_audio(audio_path):
     print(f"Analysiere Datei: {audio_path}...")
     y_audio, sr = librosa.load(audio_path, sr=22050)
     
-    # Aufteilung in 30-Sekunden-Fenster (GTZAN-Standard)[cite: 1]
+    # Aufteilung in 30-Sekunden-Fenster (GTZAN-Standard)
     chunk_duration = 30.0  
     chunk_samples = int(chunk_duration * sr)
     
-    # Modelle und Scaler laden
+    # Modelle und Scaler mit absoluten Pfaden laden
     xgb_model = xgb.XGBClassifier()
-    xgb_model.load_model("models/xgb_specialist.json")
-    lstm_model = tf.keras.models.load_model("models/lstm_specialist.keras")
-    resnet_model = tf.keras.models.load_model("models/resnet_specialist.keras")
-    scaler = joblib.load("models/scaler.joblib")
+    xgb_model.load_model(os.path.join(BASE_DIR, "models", "xgb_specialist.json"))
+    lstm_model = tf.keras.models.load_model(os.path.join(BASE_DIR, "models", "lstm_specialist.keras"))
+    resnet_model = tf.keras.models.load_model(os.path.join(BASE_DIR, "models", "resnet_specialist.keras"))
+    scaler = joblib.load(os.path.join(BASE_DIR, "models", "scaler.joblib"))
     
     all_probabilities = []
     
@@ -30,9 +34,31 @@ def process_live_audio(audio_path):
         if len(chunk) < chunk_samples:
             chunk = np.pad(chunk, (0, chunk_samples - len(chunk)))
             
-        # 1. XGBoost Features (Statistik)
+        # 1. XGBoost Features (Exakt 39 Features analog zu prepare_dataset.py)[cite: 6]
+        y_harmonic, y_percussive = librosa.effects.hpss(chunk)
+        
+        chroma = librosa.feature.chroma_stft(y=y_harmonic, sr=sr)
+        rmse = librosa.feature.rms(y=chunk)
+        spec_cent = librosa.feature.spectral_centroid(y=chunk, sr=sr)
+        spec_bw = librosa.feature.spectral_bandwidth(y=chunk, sr=sr)
+        rolloff = librosa.feature.spectral_rolloff(y=chunk, sr=sr)
+        zcr = librosa.feature.zero_crossing_rate(chunk)
         mfcc = librosa.feature.mfcc(y=chunk, sr=sr, n_mfcc=20)
-        stat_features = np.hstack([np.mean(mfcc, axis=1), np.std(mfcc, axis=1)]).reshape(1, -1)
+        spec_contrast = librosa.feature.spectral_contrast(y=chunk, sr=sr)
+        tonnetz = librosa.feature.tonnetz(y=y_harmonic, sr=sr)
+
+        stat_row = [
+            np.mean(chroma), np.mean(rmse), np.mean(spec_cent),
+            np.mean(spec_bw), np.mean(rolloff), np.mean(zcr)
+        ]
+        for m in mfcc:
+            stat_row.append(np.mean(m))
+        for sc in spec_contrast:
+            stat_row.append(np.mean(sc))
+        for tn in tonnetz:
+            stat_row.append(np.mean(tn))
+            
+        stat_features = np.array(stat_row).reshape(1, -1)
         stat_scaled = scaler.transform(stat_features)
         
         # 2. ResNet Spektrogramm (128x128x3)
@@ -73,6 +99,6 @@ def process_live_audio(audio_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Verwendung: python live_demo.py <pfad_zu_audio.wav>")
+        print("Verwendung: python scripts/live_demo.py <pfad_zu_audio.wav>")
         sys.exit(1)
     process_live_audio(sys.argv[1])
