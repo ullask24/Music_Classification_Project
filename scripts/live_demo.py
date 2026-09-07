@@ -45,7 +45,7 @@ def run_live_inference(file_path):
     print(f"Lade Audiodatei: {file_path}")
     y_full, sr = librosa.load(file_path, sr=TARGET_SR, mono=True)
     
-    print("Lade V3-Modelle und Wav2Vec2 vorab...")
+    print("Lade V3-Modelle und Torchaudio Wav2Vec2 vorab...")
     xgb_model = xgb.XGBClassifier()
     xgb_model.load_model("models/xgb_specialist.json")
     lstm_model = tf.keras.models.load_model("models/lstm_specialist_bilstm.keras")
@@ -72,7 +72,7 @@ def run_live_inference(file_path):
             
         print(f"Analysiere Segment ab {i/TARGET_SR:.1f}s...")
         
-        # ResNet Spektrogramm mit exakter Min-Max Normalisierung[cite: 1]
+        # ResNet Spektrogramm mit exakter Min-Max Normalisierung
         mel_spec = librosa.feature.melspectrogram(y=y_chunk, sr=TARGET_SR, n_mels=128, n_fft=1024, hop_length=512)
         mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
         mel_norm = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min() + 1e-8)
@@ -85,7 +85,7 @@ def run_live_inference(file_path):
         X_tab_raw = extract_tabular_features(y_chunk, TARGET_SR)
         X_tab_scaled = scaler.transform(X_tab_raw)
         
-        # Wav2Vec2 Sequence für BiLSTM[cite: 1]
+        # Torchaudio Wav2Vec2 Sequence für BiLSTM
         waveform = torch.tensor(y_chunk, dtype=torch.float32).unsqueeze(0).to(device)
         with torch.no_grad():
             out = w2v_model.extract_features(waveform)
@@ -100,6 +100,10 @@ def run_live_inference(file_path):
         p_xgb = xgb_model.predict_proba(X_tab_scaled)
         p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
         p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
+        
+        print(f"  -> XGB (Top): {GENRES[p_xgb.argmax()]} ({p_xgb.max()*100:.1f}%)")
+        print(f"  -> LSTM (Top): {GENRES[p_lstm.argmax()]} ({p_lstm.max()*100:.1f}%)")
+        print(f"  -> ResNet (Top): {GENRES[p_resnet.argmax()]} ({p_resnet.max()*100:.1f}%)")
         
         p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
         probabilities.append(p_ensemble[0])
