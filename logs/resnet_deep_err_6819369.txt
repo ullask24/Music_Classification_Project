@@ -1,0 +1,14 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788773716.116936 1999522 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788773717.814725 1999522 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788773723.376917 1999522 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1788773731.451522 1999522 gpu_device.cc:2043] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 92966 MB memory:  -> device: 0, name: NVIDIA H100, pci bus id: 0000:06:00.0, compute capability: 9.0a
+I0000 00:00:1788773741.842974 1999569 service.cc:153] XLA service 0x14f23409c200 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+I0000 00:00:1788773741.843062 1999569 service.cc:161]   StreamExecutor [0]: NVIDIA H100, Compute Capability 9.0a (Driver: 13.2.0; Runtime: 12.8.0; Toolkit: 12.5.0; DNN: 9.7.1)
+I0000 00:00:1788773742.192506 1999569 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+I0000 00:00:1788773744.163491 1999569 cuda_dnn.cc:461] Loaded cuDNN version 90701
+I0000 00:00:1788773744.425189 1999569 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_26468__.282
+I0000 00:00:1788773759.288993 1999569 device_compiler.h:208] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+I0000 00:00:1788773761.812670 1999571 dot_merger.cc:481] Merging Dots in computation: a_inference_one_step_on_data_26468__.282
