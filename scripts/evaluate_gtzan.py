@@ -72,7 +72,7 @@ def evaluate_gtzan():
             continue
         
         files = [f for f in os.listdir(genre_dir) if f.endswith('.wav')]
-        for file in files[:5]:
+        for file in files[:3]:  # Kleine Stichprobe pro Genre zum Testen
             file_path = os.path.join(genre_dir, file)
             y_audio, sr = librosa.load(file_path, sr=22050)
             
@@ -94,23 +94,23 @@ def evaluate_gtzan():
             p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
             p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
             
-            # Diagnose pro Datei zur Identifikation des fehlerhaften Modells
-            print(f"  -> XGB Top: {GENRES[p_xgb.argmax()]} ({p_xgb.max()*100:.1f}%)")
-            print(f"  -> LSTM Top: {GENRES[p_lstm.argmax()]} ({p_lstm.max()*100:.1f}%)")
-            print(f"  -> ResNet Top: {GENRES[p_resnet.argmax()]} ({p_resnet.max()*100:.1f}%)")
+            # Diagnose mit Indizes
+            xgb_idx, lstm_idx, resnet_idx = p_xgb.argmax(), p_lstm.argmax(), p_resnet.argmax()
+            print(f"[{genre}] {file}")
+            print(f"  -> XGB   (Idx {xgb_idx}): {GENRES[xgb_idx]} ({p_xgb.max()*100:.1f}%)")
+            print(f"  -> LSTM  (Idx {lstm_idx}): {GENRES[lstm_idx]} ({p_lstm.max()*100:.1f}%)")
+            print(f"  -> ResNet(Idx {resnet_idx}): {GENRES[resnet_idx]} ({p_resnet.max()*100:.1f}%)")
             
             p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
             pred_idx = p_ensemble.argmax()
+            print(f"  => Ensemble Vorhersage: {GENRES[pred_idx]} (Echt: {genre})\n")
             
             y_true.append(GENRES.index(genre))
             y_pred.append(pred_idx)
-            print(f"[{genre}] {file} -> Vorhersage: {GENRES[pred_idx]} (Echt: {genre})\n")
 
     if len(y_true) > 0:
         acc = accuracy_score(y_true, y_pred)
-        print(f"\nGesamt-Accuracy auf Test-Stichprobe: {acc*100:.2f}%")
-        print("\nClassification Report:")
-        print(classification_report(y_true, y_pred, target_names=GENRES, zero_division=0))
+        print(f"Gesamt-Accuracy auf Test-Stichprobe: {acc*100:.2f}%")
 
 if __name__ == "__main__":
     evaluate_gtzan()
