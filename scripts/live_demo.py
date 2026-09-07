@@ -10,6 +10,10 @@ import torch
 
 GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
 
+def softmax(x):
+    e_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
+    return e_x / np.sum(e_x, axis=-1, keepdims=True)
+
 def extract_tabular_features(y_audio, sr):
     features = []
     mfccs = librosa.feature.mfcc(y=y_audio, sr=sr, n_mfcc=20)
@@ -55,7 +59,6 @@ def run_live_inference(file_path):
     resnet_model = tf.keras.models.load_model("models/resnet_specialist_deep.keras")
     scaler = joblib.load("models/scaler.joblib")
     
-    # Wav2Vec2 einmalig laden
     processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
     w2v_model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
     
@@ -85,8 +88,8 @@ def run_live_inference(file_path):
         X_seq = extract_wav2vec_sequence(y_chunk, sr, processor, w2v_model)
         
         p_xgb = xgb_model.predict_proba(X_tab_scaled)
-        p_lstm = lstm_model.predict(X_seq, verbose=0)
-        p_resnet = resnet_model.predict(X_spec, verbose=0)
+        p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
+        p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
         
         p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
         probabilities.append(p_ensemble[0])
@@ -112,7 +115,7 @@ def run_live_inference(file_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Verwendung: python3 scripts/live_demo_long.py <pfad_zu_audio.wav>")
+        print("Verwendung: python3 scripts/live_demo.py <pfad_zu_audio.wav>")
     else:
         audio_path = sys.argv[1]
         if os.path.exists(audio_path):
