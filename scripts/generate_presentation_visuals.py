@@ -1,3 +1,4 @@
+import os
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
@@ -22,7 +23,7 @@ plt.legend(loc='lower right')
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.savefig('bilstm_vs_lstm_single.png', dpi=300)
-plt.close() # Schließt die Abbildung, damit sie separat bleibt
+plt.close()
 
 # ==========================================
 # 2. Abbildung: ResNet Spektrogramm
@@ -30,7 +31,7 @@ plt.close() # Schließt die Abbildung, damit sie separat bleibt
 audio_path = "data/gtzan/blues/blues.00000.wav"
 plt.figure(figsize=(8, 5))
 
-if librosa.util.os.path.exists(audio_path):
+if os.path.exists(audio_path):
     y, sr = librosa.load(audio_path, sr=16000, duration=3.0)
     mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, n_fft=1024, hop_length=512)
     mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
@@ -70,4 +71,4 @@ plt.tight_layout()
 plt.savefig('domain_shift_single.png', dpi=300)
 plt.close()
 
-print("Alle 3 einzelnen Abbildungsdateien wurden erfolgreich generiert und gespeichert!")
+print("Skript erfolgreich ausgeführt: Alle Abbildungsdateien wurden generiert.")
