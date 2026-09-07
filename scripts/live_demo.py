@@ -5,52 +5,45 @@ import tensorflow as tf
 import xgboost as xgb
 import joblib
 import librosa
-from transformers import Wav2Vec2Processor, Wav2Vec2Model
 import torch
+import torchaudio
 
 GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
+TARGET_SR = 16000
+DURATION = 30
+FIXED_SPEC_WIDTH = 128
 
 def softmax(x):
     e_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
     return e_x / np.sum(e_x, axis=-1, keepdims=True)
 
-def extract_tabular_features(y_audio, sr):
-    features = []
-    mfccs = librosa.feature.mfcc(y=y_audio, sr=sr, n_mfcc=20)
-    features.extend(np.mean(mfccs, axis=1))
-    contrast = librosa.feature.spectral_contrast(y=y_audio, sr=sr)
-    features.extend(np.mean(contrast, axis=1))
-    hpss = librosa.effects.hpss(y_audio)
-    tonnetz = librosa.feature.tonnetz(y=librosa.effects.harmonic(y_audio), sr=sr)
-    features.extend(np.mean(tonnetz, axis=1))
-    features.append(np.mean(librosa.feature.spectral_centroid(y=y_audio, sr=sr)))
-    features.append(np.mean(librosa.feature.spectral_bandwidth(y=y_audio, sr=sr)))
-    features.append(np.mean(librosa.feature.spectral_rolloff(y=y_audio, sr=sr)))
-    features.append(np.mean(librosa.feature.zero_crossing_rate(y_audio)))
-    features.append(np.mean(librosa.feature.rms(y=y_audio)))
-    while len(features) < 39:
-        features.append(0.0)
-    return np.array(features[:39]).reshape(1, -1)
+def extract_tabular_features(y, sr):
+    y_harmonic, y_percussive = librosa.effects.hpss(y)
+    chroma = librosa.feature.chroma_stft(y=y_harmonic, sr=sr)
+    rmse = librosa.feature.rms(y=y)
+    spec_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    spec_bw = librosa.feature.spectral_bandwidth(y=y, sr=sr)
+    rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
+    zcr = librosa.feature.zero_crossing_rate(y)
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)
+    spec_contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
+    tonnetz = librosa.feature.tonnetz(y=y_harmonic, sr=sr)
 
-def extract_wav2vec_sequence(y_audio, orig_sr, processor, model):
-    if orig_sr != 16000:
-        y_audio = librosa.resample(y_audio, orig_sr=orig_sr, target_sr=16000)
-        
-    inputs = processor(y_audio, sampling_rate=16000, return_tensors="pt", padding=True)
-    with torch.no_grad():
-        outputs = model(**inputs)
-        embeddings = outputs.last_hidden_state.numpy()
-        
-    target_len = 1000
-    if embeddings.shape[1] < target_len:
-        embeddings = np.pad(embeddings, ((0,0), (0, target_len - embeddings.shape[1]), (0,0)))
-    else:
-        embeddings = embeddings[:, :target_len, :]
-    return embeddings
+    temp_row = [
+        np.mean(chroma), np.mean(rmse), np.mean(spec_cent),
+        np.mean(spec_bw), np.mean(rolloff), np.mean(zcr)
+    ]
+    for m in mfcc:
+        temp_row.append(np.mean(m))
+    for sc in spec_contrast:
+        temp_row.append(np.mean(sc))
+    for tn in tonnetz:
+        temp_row.append(np.mean(tn))
+    return np.array(temp_row).reshape(1, -1)
 
 def run_live_inference(file_path):
     print(f"Lade Audiodatei: {file_path}")
-    y_full, sr = librosa.load(file_path, sr=22050)
+    y_full, sr = librosa.load(file_path, sr=TARGET_SR, mono=True)
     
     print("Lade V3-Modelle und Wav2Vec2 vorab...")
     xgb_model = xgb.XGBClassifier()
@@ -59,46 +52,54 @@ def run_live_inference(file_path):
     resnet_model = tf.keras.models.load_model("models/resnet_specialist_deep.keras")
     scaler = joblib.load("models/scaler.joblib")
     
-    processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
-    w2v_model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    bundle = torchaudio.pipelines.WAV2VEC2_BASE
+    w2v_model = bundle.get_model().to(device)
+    w2v_model.eval()
     
-    chunk_duration = 30.0
-    chunk_samples = int(chunk_duration * sr)
+    chunk_samples = TARGET_SR * DURATION
     probabilities = []
     
-    for i in range(0, len(y_full), chunk_samples):
+    for i in range(0, max(1, len(y_full)), chunk_samples):
         y_chunk = y_full[i:i + chunk_samples]
-        if len(y_chunk) < sr * 5:
+        if len(y_chunk) < TARGET_SR * 3:
             break
             
-        print(f"Analysiere Segment ab {i/sr:.1f}s...")
-        
-        mel_spec = librosa.feature.melspectrogram(y=y_chunk, sr=sr, n_mels=128)
-        mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-        if mel_spec_db.shape[1] < 128:
-            mel_spec_db = np.pad(mel_spec_db, ((0, 0), (0, 128 - mel_spec_db.shape[1])))
+        if len(y_chunk) < chunk_samples:
+            y_chunk = np.pad(y_chunk, (0, chunk_samples - len(y_chunk)))
         else:
-            mel_spec_db = mel_spec_db[:, :128]
-        X_spec = np.expand_dims(mel_spec_db, axis=-1)
-        X_spec = np.repeat(X_spec, 3, axis=-1)
+            y_chunk = y_chunk[:chunk_samples]
+            
+        print(f"Analysiere Segment ab {i/TARGET_SR:.1f}s...")
+        
+        # ResNet Spektrogramm mit exakter Min-Max Normalisierung[cite: 1]
+        mel_spec = librosa.feature.melspectrogram(y=y_chunk, sr=TARGET_SR, n_mels=128, n_fft=1024, hop_length=512)
+        mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+        mel_norm = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min() + 1e-8)
+        temp_spec = librosa.util.fix_length(mel_norm, size=FIXED_SPEC_WIDTH, axis=1)
+        temp_spec = np.expand_dims(temp_spec, axis=-1)
+        X_spec = np.repeat(temp_spec, 3, axis=-1)
         X_spec = np.expand_dims(X_spec, axis=0)
         
-        X_tab_raw = extract_tabular_features(y_chunk, sr)
+        # Tabellarische Features
+        X_tab_raw = extract_tabular_features(y_chunk, TARGET_SR)
         X_tab_scaled = scaler.transform(X_tab_raw)
-        X_seq = extract_wav2vec_sequence(y_chunk, sr, processor, w2v_model)
+        
+        # Wav2Vec2 Sequence für BiLSTM[cite: 1]
+        waveform = torch.tensor(y_chunk, dtype=torch.float32).unsqueeze(0).to(device)
+        with torch.no_grad():
+            out = w2v_model.extract_features(waveform)
+            latent_seq = out[0] if isinstance(out, tuple) else out
+            rep = latent_seq[-1].squeeze(0).cpu().numpy()
+            step = max(1, rep.shape[0] // 100)
+            temp_seq = rep[::step][:100]
+            if temp_seq.shape[0] < 100:
+                temp_seq = np.pad(temp_seq, ((0, 100 - temp_seq.shape[0]), (0, 0)))
+        X_seq = np.expand_dims(temp_seq, axis=0)
         
         p_xgb = xgb_model.predict_proba(X_tab_scaled)
         p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
         p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
-
-        p_xgb = xgb_model.predict_proba(X_tab_scaled)
-        p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
-        p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
-        
-        # Diagnose: Zeige, was die einzelnen Modelle sagen
-        print(f"  -> XGB (Top): {GENRES[p_xgb.argmax()]} ({p_xgb.max()*100:.1f}%)")
-        print(f"  -> LSTM (Top): {GENRES[p_lstm.argmax()]} ({p_lstm.max()*100:.1f}%)")
-        print(f"  -> ResNet (Top): {GENRES[p_resnet.argmax()]} ({p_resnet.max()*100:.1f}%)")
         
         p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
         probabilities.append(p_ensemble[0])
