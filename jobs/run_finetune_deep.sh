@@ -4,7 +4,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=00:45:00
+#SBATCH --time=00:30:00
 #SBATCH --output=logs/resnet_deep_out_%j.txt
 #SBATCH --error=logs/resnet_deep_err_%j.txt
 
