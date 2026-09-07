@@ -8,7 +8,7 @@
 #SBATCH --output=logs/resnet_finetune_out_%j.txt
 #SBATCH --error=logs/resnet_finetune_err_%j.txt
 
-# Module laden (identisch zum Referenz-Job)
+# Module laden
 module load devel/python/3.11
 module load devel/cuda/12.8
 
@@ -21,4 +21,3 @@ python3 scripts/train_resnet_finetune.py
 if [ $? -ne 0 ]; then echo "Fehler in train_resnet_finetune.py"; exit 1; fi
 
 echo "=== RESNET FINE-TUNING ERFOLGREICH BEENDET ==="
-```[cite: 10]
