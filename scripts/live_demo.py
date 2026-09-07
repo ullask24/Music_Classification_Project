@@ -28,11 +28,7 @@ def extract_tabular_features(y_audio, sr):
         features.append(0.0)
     return np.array(features[:39]).reshape(1, -1)
 
-def extract_wav2vec_sequence(y_audio, orig_sr):
-    processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
-    model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
-    
-    # Automatische Anpassung der Sampling-Rate auf 16000 Hz für Wav2Vec2
+def extract_wav2vec_sequence(y_audio, orig_sr, processor, model):
     if orig_sr != 16000:
         y_audio = librosa.resample(y_audio, orig_sr=orig_sr, target_sr=16000)
         
@@ -52,12 +48,16 @@ def run_live_inference(file_path):
     print(f"Lade Audiodatei: {file_path}")
     y_full, sr = librosa.load(file_path, sr=22050)
     
-    print("Lade V3-Modelle...")
+    print("Lade V3-Modelle und Wav2Vec2 vorab...")
     xgb_model = xgb.XGBClassifier()
     xgb_model.load_model("models/xgb_specialist.json")
     lstm_model = tf.keras.models.load_model("models/lstm_specialist_bilstm.keras")
     resnet_model = tf.keras.models.load_model("models/resnet_specialist_deep.keras")
     scaler = joblib.load("models/scaler.joblib")
+    
+    # Wav2Vec2 einmalig laden
+    processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+    w2v_model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
     
     chunk_duration = 30.0
     chunk_samples = int(chunk_duration * sr)
@@ -82,7 +82,7 @@ def run_live_inference(file_path):
         
         X_tab_raw = extract_tabular_features(y_chunk, sr)
         X_tab_scaled = scaler.transform(X_tab_raw)
-        X_seq = extract_wav2vec_sequence(y_chunk, sr)
+        X_seq = extract_wav2vec_sequence(y_chunk, sr, processor, w2v_model)
         
         p_xgb = xgb_model.predict_proba(X_tab_scaled)
         p_lstm = lstm_model.predict(X_seq, verbose=0)
