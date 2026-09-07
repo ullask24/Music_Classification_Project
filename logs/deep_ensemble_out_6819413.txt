@@ -1,0 +1,21 @@
+=== STARTE FINALES ENSEMBLE MIT TIEFEM RESNET ===
+=== STARTE ENSEMBLE MIT TIEF-FINE-GESUNTEM RESNET ===
+Lade Spezialisten...
+FINAL DEEP FINE-TUNED ENSEMBLE ACCURACY: 89.17%
+Erfolgreich dokumentiert in: logs/final_report_deep_finetuned_ensemble_20260907_114302.txt
+=== ENSEMBLE ERFOLGREICH BEENDET ===
+
+============================= JOB FEEDBACK =============================
+
+NodeName=uc3n082
+Job ID: 6819413
+Cluster: uc3
+User/Group: ul_cxf44/ul_student
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:00:52
+CPU Efficiency: 15.12% of 00:05:44 core-walltime
+Job Wall-clock time: 00:00:43
+Memory Utilized: 5.38 GB
+Memory Efficiency: 16.82% of 32.00 GB (32.00 GB/node)
