@@ -65,19 +65,17 @@ def evaluate_gtzan():
         print(f"Fehler: Verzeichnis {DATA_DIR} nicht gefunden.")
         return
 
-    print(Starte Evaluation über GTZAN-Dateien in {DATA_DIR}...")
+    print(f"Starte Evaluation über GTZAN-Dateien in {DATA_DIR}...")
     for genre in GENRES:
         genre_dir = os.path.join(DATA_DIR, genre)
         if not os.path.isdir(genre_dir):
             continue
         
         files = [f for f in os.listdir(genre_dir) if f.endswith('.wav')]
-        # Optional: Nur eine Stichprobe pro Genre testen (z.B. die ersten 5 Dateien), um Zeit zu sparen
         for file in files[:5]:
             file_path = os.path.join(genre_dir, file)
             y_audio, sr = librosa.load(file_path, sr=22050)
             
-            # Features extrahieren
             mel_spec = librosa.feature.melspectrogram(y=y_audio, sr=sr, n_mels=128)
             mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
             if mel_spec_db.shape[1] < 128:
