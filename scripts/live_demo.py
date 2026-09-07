@@ -28,13 +28,19 @@ def extract_tabular_features(y_audio, sr):
         features.append(0.0)
     return np.array(features[:39]).reshape(1, -1)
 
-def extract_wav2vec_sequence(y_audio, sr):
+def extract_wav2vec_sequence(y_audio, orig_sr):
     processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
     model = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
-    inputs = processor(y_audio, sampling_rate=sr, return_tensors="pt", padding=True)
+    
+    # Automatische Anpassung der Sampling-Rate auf 16000 Hz für Wav2Vec2
+    if orig_sr != 16000:
+        y_audio = librosa.resample(y_audio, orig_sr=orig_sr, target_sr=16000)
+        
+    inputs = processor(y_audio, sampling_rate=16000, return_tensors="pt", padding=True)
     with torch.no_grad():
         outputs = model(**inputs)
         embeddings = outputs.last_hidden_state.numpy()
+        
     target_len = 1000
     if embeddings.shape[1] < target_len:
         embeddings = np.pad(embeddings, ((0,0), (0, target_len - embeddings.shape[1]), (0,0)))
