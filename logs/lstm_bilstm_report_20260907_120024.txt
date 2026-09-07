@@ -1,0 +1,22 @@
+--- LSTM SPECIALIST EXPERIMENT - BIDIRECTIONAL ARCHITECTURE (20260907_120024) ---
+VERÄNDERUNGEN & VERGLEICH:
+1. Architekturwechsel von einfachem LSTM auf Bidirektionales LSTM (BiLSTM).
+2. Hinzufügen von BatchNormalization und erweitertem Dropout (0.3/0.2) zur Regularisierung.
+3. Vergleich zur Baseline: Standard-LSTM erreichte 71% Accuracy.
+
+              precision    recall  f1-score   support
+
+           0       0.97      0.89      0.93        73
+           1       0.99      1.00      0.99        69
+           2       0.86      0.93      0.89        58
+           3       0.76      0.85      0.80        59
+           4       0.91      0.81      0.86        53
+           5       0.96      0.98      0.97        51
+           6       0.95      0.98      0.96        56
+           7       0.93      0.93      0.93        57
+           8       0.86      0.95      0.90        58
+           9       0.93      0.79      0.85        66
+
+    accuracy                           0.91       600
+   macro avg       0.91      0.91      0.91       600
+weighted avg       0.91      0.91      0.91       600
