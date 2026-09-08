@@ -42,21 +42,18 @@ def extract_tabular_features(y, sr):
         temp_row.append(np.mean(tn))
     return np.array(temp_row).reshape(1, -1)
 
-def get_individual_probabilities(xgb_model, bilstm_model, resnet_model, tabular_features, wav2vec_seq, spec_numpy, device):
+def get_individual_probabilities(xgb_model, bilstm_model, resnet_model, tabular_features, wav2vec_seq, spec_numpy):
     """
     Holt und normalisiert die Einzelwahrscheinlichkeiten aller drei Ensemble-Modelle.
     """
+    # 1. XGBoost (Tabellarisch)
     xgb_probs = xgb_model.predict_proba(tabular_features)
     
-    bilstm_model.eval()
-    with torch.no_grad():
-        seq_tensor = torch.tensor(wav2vec_seq, dtype=torch.float32).to(device)
-        if seq_tensor.dim() == 2:
-            seq_tensor = seq_tensor.unsqueeze(0)
-        bilstm_out = bilstm_model(seq_tensor)
-        bilstm_probs = softmax(bilstm_out.cpu().numpy())
+    # 2. BiLSTM (TensorFlow/Keras Sequenz-Modell)
+    bilstm_out = bilstm_model.predict(wav2vec_seq, verbose=0)
+    bilstm_probs = softmax(bilstm_out)
 
-    # ResNet ist ein TensorFlow/Keras-Modell und erwartet NumPy Arrays im Format (Batch, H, W, C)
+    # 3. ResNet (TensorFlow/Keras Bild-Modell)
     resnet_out = resnet_model.predict(spec_numpy, verbose=0)
     resnet_probs = softmax(resnet_out)
 
@@ -125,7 +122,7 @@ def evaluate_gtzan():
             # Einzelwahrscheinlichkeiten abrufen
             p_xgb, p_lstm, p_resnet = get_individual_probabilities(
                 xgb_model, lstm_model, resnet_model, 
-                X_tab_scaled, X_seq, X_spec_np, device
+                X_tab_scaled, X_seq, X_spec_np
             )
             
             # Gewichtetes Soft-Voting (Ensemble V3)
