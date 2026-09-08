@@ -1,5 +1,4 @@
 import os
-import sys
 import numpy as np
 import tensorflow as tf
 import xgboost as xgb
@@ -9,6 +8,7 @@ import torch
 import torchaudio
 
 GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
+LIVE_DIR = "live"
 TARGET_SR = 16000
 DURATION = 30
 FIXED_SPEC_WIDTH = 128
@@ -18,7 +18,7 @@ def softmax(x):
     return e_x / np.sum(e_x, axis=-1, keepdims=True)
 
 def extract_tabular_features(y, sr):
-    y_harmonic, y_percussive = librosa.effects.hpss(y)
+    y_harmonic, _ = librosa.effects.hpss(y)
     chroma = librosa.feature.chroma_stft(y=y_harmonic, sr=sr)
     rmse = librosa.feature.rms(y=y)
     spec_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
@@ -41,11 +41,8 @@ def extract_tabular_features(y, sr):
         temp_row.append(np.mean(tn))
     return np.array(temp_row).reshape(1, -1)
 
-def run_live_inference(file_path):
-    print(f"Lade Audiodatei: {file_path}")
-    y_full, sr = librosa.load(file_path, sr=TARGET_SR, mono=True)
-    
-    print("Lade V3-Modelle und Torchaudio Wav2Vec2 vorab...")
+def evaluate_live_folders():
+    print("Lade V3-Modelle und Wav2Vec2 vorab...")
     xgb_model = xgb.XGBClassifier()
     xgb_model.load_model("models/xgb_specialist.json")
     lstm_model = tf.keras.models.load_model("models/lstm_specialist_bilstm.keras")
@@ -56,83 +53,83 @@ def run_live_inference(file_path):
     bundle = torchaudio.pipelines.WAV2VEC2_BASE
     w2v_model = bundle.get_model().to(device)
     w2v_model.eval()
-    
-    chunk_samples = TARGET_SR * DURATION
-    probabilities = []
-    
-    for i in range(0, max(1, len(y_full)), chunk_samples):
-        y_chunk = y_full[i:i + chunk_samples]
-        if len(y_chunk) < TARGET_SR * 3:
-            break
-            
-        if len(y_chunk) < chunk_samples:
-            y_chunk = np.pad(y_chunk, (0, chunk_samples - len(y_chunk)))
-        else:
-            y_chunk = y_chunk[:chunk_samples]
-            
-        print(f"Analysiere Segment ab {i/TARGET_SR:.1f}s...")
-        
-        # ResNet Spektrogramm mit exakter Min-Max Normalisierung
-        mel_spec = librosa.feature.melspectrogram(y=y_chunk, sr=TARGET_SR, n_mels=128, n_fft=1024, hop_length=512)
-        mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-        mel_norm = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min() + 1e-8)
-        temp_spec = librosa.util.fix_length(mel_norm, size=FIXED_SPEC_WIDTH, axis=1)
-        temp_spec = np.expand_dims(temp_spec, axis=-1)
-        X_spec = np.repeat(temp_spec, 3, axis=-1)
-        X_spec = np.expand_dims(X_spec, axis=0)
-        
-        # Tabellarische Features
-        X_tab_raw = extract_tabular_features(y_chunk, TARGET_SR)
-        X_tab_scaled = scaler.transform(X_tab_raw)
-        
-        # Torchaudio Wav2Vec2 Sequence für BiLSTM
-        waveform = torch.tensor(y_chunk, dtype=torch.float32).unsqueeze(0).to(device)
-        with torch.no_grad():
-            out = w2v_model.extract_features(waveform)
-            latent_seq = out[0] if isinstance(out, tuple) else out
-            rep = latent_seq[-1].squeeze(0).cpu().numpy()
-            step = max(1, rep.shape[0] // 100)
-            temp_seq = rep[::step][:100]
-            if temp_seq.shape[0] < 100:
-                temp_seq = np.pad(temp_seq, ((0, 100 - temp_seq.shape[0]), (0, 0)))
-        X_seq = np.expand_dims(temp_seq, axis=0)
-        
-        p_xgb = xgb_model.predict_proba(X_tab_scaled)
-        p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
-        p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
-        
-        print(f"  -> XGB (Top): {GENRES[p_xgb.argmax()]} ({p_xgb.max()*100:.1f}%)")
-        print(f"  -> LSTM (Top): {GENRES[p_lstm.argmax()]} ({p_lstm.max()*100:.1f}%)")
-        print(f"  -> ResNet (Top): {GENRES[p_resnet.argmax()]} ({p_resnet.max()*100:.1f}%)")
-        
-        p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
-        probabilities.append(p_ensemble[0])
-        
-    if len(probabilities) == 0:
-        print("Fehler: Audiodatei ist zu kurz.")
+
+    target_folders = ['country', 'metal', 'jazz']
+
+    if not os.path.exists(LIVE_DIR):
+        print(f"Fehler: Live-Verzeichnis '{LIVE_DIR}' nicht gefunden.")
         return
-        
-    mean_probabilities = np.mean(probabilities, axis=0)
-    pred_idx = mean_probabilities.argmax()
-    confidence = mean_probabilities[pred_idx] * 100
-    
-    print("\n" + "="*40)
-    print(" ERGEBNIS DER LIVE-DEMO (LANGER TRACK)")
-    print("="*40)
-    print(f"Datei: {os.path.basename(file_path)}")
-    print(f"Erkanntes Genre: {GENRES[pred_idx].upper()}")
-    print(f"Konfidenz (Ensemble V3): {confidence:.2f}%")
-    print("\nWahrscheinlichkeiten aller Genres:")
-    for idx, prob in enumerate(mean_probabilities):
-        print(f"  - {GENRES[idx].capitalize()}: {prob*100:.2f}%")
-    print("="*40)
+
+    for folder_name in target_folders:
+        folder_path = os.path.join(LIVE_DIR, folder_name)
+        if not os.path.isdir(folder_path):
+            print(f"Überspringe: Ordner '{folder_name}' existiert nicht unter {LIVE_DIR}.")
+            continue
+
+        files = [f for f in os.listdir(folder_path) if f.endswith('.wav')]
+        if not files:
+            print(f"Keine .wav Dateien im Ordner '{folder_name}' gefunden.")
+            continue
+
+        print(f"\n" + "="*60)
+        print(f" ANALYSE DES ORDNERS: {folder_name.upper()} (Live-Daten Domain Shift)")
+        print("="*60)
+
+        for file in files:
+            file_path = os.path.join(folder_path, file)
+            y_full, sr = librosa.load(file_path, sr=TARGET_SR, mono=True)
+            
+            chunk_samples = TARGET_SR * DURATION
+            chunk_probs_ensemble = []
+            
+            # Verarbeite den ersten validen Ausschnitt (oder gemittelt über Segmente)
+            for i in range(0, max(1, len(y_full)), chunk_samples):
+                y_chunk = y_full[i:i + chunk_samples]
+                if len(y_chunk) < TARGET_SR * 3:
+                    break
+                if len(y_chunk) < chunk_samples:
+                    y_chunk = np.pad(y_chunk, (0, chunk_samples - len(y_chunk)))
+                else:
+                    y_chunk = y_chunk[:chunk_samples]
+                
+                # Features extrahieren
+                mel_spec = librosa.feature.melspectrogram(y=y_chunk, sr=TARGET_SR, n_mels=128, n_fft=1024, hop_length=512)
+                mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+                mel_norm = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min() + 1e-8)
+                temp_spec = librosa.util.fix_length(mel_norm, size=FIXED_SPEC_WIDTH, axis=1)
+                temp_spec = np.expand_dims(temp_spec, axis=-1)
+                X_spec = np.repeat(temp_spec, 3, axis=-1)
+                X_spec_np = np.expand_dims(X_spec, axis=0)
+                
+                X_tab_raw = extract_tabular_features(y_chunk, TARGET_SR)
+                X_tab_scaled = scaler.transform(X_tab_raw)
+                
+                waveform = torch.tensor(y_chunk, dtype=torch.float32).unsqueeze(0).to(device)
+                with torch.no_grad():
+                    out = w2v_model.extract_features(waveform)
+                    latent_seq = out[0] if isinstance(out, tuple) else out
+                    rep = latent_seq[-1].squeeze(0).cpu().numpy()
+                    step = max(1, rep.shape[0] // 100)
+                    temp_seq = rep[::step][:100]
+                    if temp_seq.shape[0] < 100:
+                        temp_seq = np.pad(temp_seq, ((0, 100 - temp_seq.shape[0]), (0, 0)))
+                X_seq = np.expand_dims(temp_seq, axis=0)
+                
+                # Einzelwahrscheinlichkeiten holen
+                p_xgb = xgb_model.predict_proba(X_tab_scaled)
+                p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
+                p_resnet = softmax(resnet_model.predict(X_spec_np, verbose=0))
+                
+                p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
+                chunk_probs_ensemble.append(p_ensemble[0])
+                
+                # Zeige exemplarisch das erste Segment zum Vergleich des Domain Shifts
+                print(f"Datei: {file} [Segment {i/TARGET_SR:.1f}s]")
+                print(f"  -> XGBoost:  {GENRES[p_xgb.argmax()]:<10} ({p_xgb[0, p_xgb.argmax()]*100:5.2f}% Konfidenz) [Anfällig für Drift]")
+                print(f"  -> BiLSTM:   {GENRES[p_lstm.argmax()]:<10} ({p_lstm[0, p_lstm.argmax()]*100:5.2f}% Konfidenz)")
+                print(f"  -> ResNet:   {GENRES[p_resnet.argmax()]:<10} ({p_resnet[0, p_resnet.argmax()]*100:5.2f}% Konfidenz)")
+                print(f"  -> ENSEMBLE: {GENRES[p_ensemble.argmax()]:<10} ({p_ensemble[0, p_ensemble.argmax()]*100:5.2f}% Konfidenz)\n")
+                break # Analysiert das erste prägende Segment pro Datei
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Verwendung: python3 scripts/live_demo.py <pfad_zu_audio.wav>")
-    else:
-        audio_path = sys.argv[1]
-        if os.path.exists(audio_path):
-            run_live_inference(audio_path)
-        else:
-            print(f"Fehler: Datei nicht gefunden unter {audio_path}")
+    evaluate_live_folders()
