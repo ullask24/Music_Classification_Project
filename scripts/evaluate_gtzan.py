@@ -73,7 +73,7 @@ def evaluate_gtzan():
         print(f"Fehler: Verzeichnis {DATA_DIR} nicht gefunden.")
         return
 
-    print(f"Starte Evaluation über GTZAN-Dateien in {DATA_DIR} mit detaillierten Probabilities...\n")
+    print(f"Starte Evaluation über GTZAN-Dateien in {DATA_DIR} ..\n")
     for genre_idx, genre in enumerate(GENRES):
         genre_dir = os.path.join(DATA_DIR, genre)
         if not os.path.isdir(genre_dir):
