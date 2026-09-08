@@ -8,7 +8,7 @@ import torch
 import torchaudio
 
 GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
-LIVE_DIR = "../live"
+LIVE_DIR = "live"
 TARGET_SR = 16000
 DURATION = 30
 FIXED_SPEC_WIDTH = 128
@@ -41,7 +41,7 @@ def extract_tabular_features(y, sr):
         temp_row.append(np.mean(tn))
     return np.array(temp_row).reshape(1, -1)
 
-def evaluate_live_folders():
+def evaluate_live_folders_multi_segment():
     print("Lade V3-Modelle und Wav2Vec2 vorab...")
     xgb_model = xgb.XGBClassifier()
     xgb_model.load_model("models/xgb_specialist.json")
@@ -71,18 +71,18 @@ def evaluate_live_folders():
             print(f"Keine .wav Dateien im Ordner '{folder_name}' gefunden.")
             continue
 
-        print(f"\n" + "="*60)
-        print(f" ANALYSE DES ORDNERS: {folder_name.upper()} (Live-Daten Domain Shift)")
-        print("="*60)
+        print(f"\n" + "="*70)
+        print(f" MULTI-SEGMENT ANALYSE DES ORDNERS: {folder_name.upper()}")
+        print("="*70)
 
         for file in files:
             file_path = os.path.join(folder_path, file)
             y_full, sr = librosa.load(file_path, sr=TARGET_SR, mono=True)
-            
             chunk_samples = TARGET_SR * DURATION
-            chunk_probs_ensemble = []
             
-            # Verarbeite den ersten validen Ausschnitt (oder gemittelt über Segmente)
+            print(f"\n--- Datei: {file} (Gesamtlänge: {len(y_full)/TARGET_SR:.1f}s) ---")
+            
+            chunk_idx = 0
             for i in range(0, max(1, len(y_full)), chunk_samples):
                 y_chunk = y_full[i:i + chunk_samples]
                 if len(y_chunk) < TARGET_SR * 3:
@@ -121,15 +121,14 @@ def evaluate_live_folders():
                 p_resnet = softmax(resnet_model.predict(X_spec_np, verbose=0))
                 
                 p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
-                chunk_probs_ensemble.append(p_ensemble[0])
                 
-                # Zeige exemplarisch das erste Segment zum Vergleich des Domain Shifts
-                print(f"Datei: {file} [Segment {i/TARGET_SR:.1f}s]")
-                print(f"  -> XGBoost:  {GENRES[p_xgb.argmax()]:<10} ({p_xgb[0, p_xgb.argmax()]*100:5.2f}% Konfidenz)")
-                print(f"  -> BiLSTM:   {GENRES[p_lstm.argmax()]:<10} ({p_lstm[0, p_lstm.argmax()]*100:5.2f}% Konfidenz)")
-                print(f"  -> ResNet:   {GENRES[p_resnet.argmax()]:<10} ({p_resnet[0, p_resnet.argmax()]*100:5.2f}% Konfidenz)")
-                print(f"  -> ENSEMBLE: {GENRES[p_ensemble.argmax()]:<10} ({p_ensemble[0, p_ensemble.argmax()]*100:5.2f}% Konfidenz)\n")
-                break # Analysiert das erste prägende Segment pro Datei
+                print(f"  [Segment {chunk_idx+1} | Start: {i/TARGET_SR:.1f}s]")
+                print(f"    -> XGBoost:  {GENRES[p_xgb.argmax()]:<10} ({p_xgb[0, p_xgb.argmax()]*100:5.2f}% Konfidenz)")
+                print(f"    -> BiLSTM:   {GENRES[p_lstm.argmax()]:<10} ({p_lstm[0, p_lstm.argmax()]*100:5.2f}% Konfidenz)")
+                print(f"    -> ResNet:   {GENRES[p_resnet.argmax()]:<10} ({p_resnet[0, p_resnet.argmax()]*100:5.2f}% Konfidenz)")
+                print(f"    -> ENSEMBLE: {GENRES[p_ensemble.argmax()]:<10} ({p_ensemble[0, p_ensemble.argmax()]*100:5.2f}% Konfidenz)")
+                
+                chunk_idx += 1
 
 if __name__ == "__main__":
-    evaluate_live_folders()
+    evaluate_live_folders_multi_segment()
