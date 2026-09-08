@@ -73,14 +73,14 @@ def evaluate_gtzan():
         print(f"Fehler: Verzeichnis {DATA_DIR} nicht gefunden.")
         return
 
-    print(f"Starte Evaluation über GTZAN-Dateien in {DATA_DIR}...")
+    print(f"Starte Evaluation über GTZAN-Dateien in {DATA_DIR} mit detaillierten Probabilities...\n")
     for genre_idx, genre in enumerate(GENRES):
         genre_dir = os.path.join(DATA_DIR, genre)
         if not os.path.isdir(genre_dir):
             continue
         
         files = [f for f in os.listdir(genre_dir) if f.endswith('.wav')]
-        for file in files[:3]:
+        for file in files[:2]: # Beispielhaft 2 Dateien pro Genre für tiefen Einblick
             file_path = os.path.join(genre_dir, file)
             y, sr = librosa.load(file_path, sr=TARGET_SR, mono=True, duration=DURATION)
             if len(y) < TARGET_SR * DURATION:
@@ -123,18 +123,21 @@ def evaluate_gtzan():
             y_pred_resnet.append(p_resnet.argmax())
             y_pred_ensemble.append(p_ensemble.argmax())
 
+            print(f"Datei: {file} (Echt: {genre.upper()})")
+            print(f"  -> XGBoost:  {GENRES[p_xgb.argmax()]:<10} ({p_xgb[0, p_xgb.argmax()]*100:5.2f}% Konfidenz)")
+            print(f"  -> BiLSTM:   {GENRES[p_lstm.argmax()]:<10} ({p_lstm[0, p_lstm.argmax()]*100:5.2f}% Konfidenz)")
+            print(f"  -> ResNet:   {GENRES[p_resnet.argmax()]:<10} ({p_resnet[0, p_resnet.argmax()]*100:5.2f}% Konfidenz)")
+            print(f"  -> ENSEMBLE: {GENRES[p_ensemble.argmax()]:<10} ({p_ensemble[0, p_ensemble.argmax()]*100:5.2f}% Konfidenz)\n")
+
     if len(y_true) > 0:
-        print("\n" + "="*40)
-        print(" EINZEL- UND ENSEMBLE-ERGEBNISSE ")
-        print("="*40)
+        print("="*50)
+        print(" GESAMTERGEBNIS DER EVALUATION ")
+        print("="*50)
         print(f"XGBoost Accuracy:   {accuracy_score(y_true, y_pred_xgb)*100:.2f}%")
         print(f"BiLSTM Accuracy:    {accuracy_score(y_true, y_pred_lstm)*100:.2f}%")
         print(f"ResNet Accuracy:    {accuracy_score(y_true, y_pred_resnet)*100:.2f}%")
         print(f"Ensemble V3 Acc.:   {accuracy_score(y_true, y_pred_ensemble)*100:.2f}%")
-        print("="*40)
-        
-        print("\nClassification Report (Ensemble V3):")
-        print(classification_report(y_true, y_pred_ensemble, target_names=GENRES, zero_division=0))
+        print("="*50)
 
 if __name__ == "__main__":
     evaluate_gtzan()
