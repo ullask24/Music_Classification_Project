@@ -42,6 +42,30 @@ def extract_tabular_features(y, sr):
         temp_row.append(np.mean(tn))
     return np.array(temp_row).reshape(1, -1)
 
+def get_individual_probabilities(xgb_model, bilstm_model, resnet_model, tabular_features, wav2vec_seq, mel_spec_tensor, device):
+    """
+    Holt und normalisiert die Einzelwahrscheinlichkeiten aller drei Ensemble-Modelle.
+    """
+    xgb_probs = xgb_model.predict_proba(tabular_features)
+    
+    bilstm_model.eval()
+    with torch.no_grad():
+        seq_tensor = torch.tensor(wav2vec_seq, dtype=torch.float32).to(device)
+        if seq_tensor.dim() == 2:
+            seq_tensor = seq_tensor.unsqueeze(0)
+        bilstm_out = bilstm_model(seq_tensor)
+        bilstm_probs = softmax(bilstm_out.cpu().numpy())
+
+    resnet_model.eval()
+    with torch.no_grad():
+        spec_tensor = mel_spec_tensor.to(device)
+        if spec_tensor.dim() == 3:
+            spec_tensor = spec_tensor.unsqueeze(0)
+        resnet_out = resnet_model(spec_tensor)
+        resnet_probs = softmax(resnet_out.cpu().numpy())
+
+    return xgb_probs, bilstm_probs, resnet_probs
+
 def evaluate_gtzan():
     print("Lade V3-Modelle und Wav2Vec2 vorab...")
     xgb_model = xgb.XGBClassifier()
@@ -77,14 +101,14 @@ def evaluate_gtzan():
             else:
                 y = y[:TARGET_SR * DURATION]
             
-            # ResNet Spektrogramm mit exakter Min-Max Normalisierung wie im Training[cite: 1]
+            # ResNet Spektrogramm mit exakter Min-Max Normalisierung[cite: 1]
             mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, n_fft=1024, hop_length=512)
             mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
             mel_norm = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min() + 1e-8)
             temp_spec = librosa.util.fix_length(mel_norm, size=FIXED_SPEC_WIDTH, axis=1)
             temp_spec = np.expand_dims(temp_spec, axis=-1)
             X_spec = np.repeat(temp_spec, 3, axis=-1)
-            X_spec = np.expand_dims(X_spec, axis=0)
+            X_spec_tensor = torch.tensor(X_spec, dtype=torch.float32).permute(0, 3, 1, 2)
             
             # Tabellarische Features
             X_tab_raw = extract_tabular_features(y, sr)
@@ -102,16 +126,19 @@ def evaluate_gtzan():
                     temp_seq = np.pad(temp_seq, ((0, 100 - temp_seq.shape[0]), (0, 0)))
             X_seq = np.expand_dims(temp_seq, axis=0)
             
-            p_xgb = xgb_model.predict_proba(X_tab_scaled)
-            p_lstm = softmax(lstm_model.predict(X_seq, verbose=0))
-            p_resnet = softmax(resnet_model.predict(X_spec, verbose=0))
+            # Einzelwahrscheinlichkeiten über die strukturierte Funktion abrufen
+            p_xgb, p_lstm, p_resnet = get_individual_probabilities(
+                xgb_model, lstm_model, resnet_model, 
+                X_tab_scaled, X_seq, X_spec_tensor, device
+            )
             
+            # Gewichtetes Soft-Voting (Ensemble V3)
             p_ensemble = (0.25 * p_xgb) + (0.45 * p_lstm) + (0.30 * p_resnet)
             pred_idx = p_ensemble.argmax()
             
             y_true.append(genre_idx)
             y_pred.append(pred_idx)
-            print(f"[{genre}] {file} -> Vorhersage: {GENRES[pred_idx]} (Echt: {genre})")
+            print(f"[{genre}] {file} -> XGB: {GENRES[p_xgb.argmax()]} | LSTM: {GENRES[p_lstm.argmax()]} | ResNet: {GENRES[p_resnet.argmax()]} -> Ensemble: {GENRES[pred_idx]}")
 
     if len(y_true) > 0:
         acc = accuracy_score(y_true, y_pred)
