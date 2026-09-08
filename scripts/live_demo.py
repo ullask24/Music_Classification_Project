@@ -8,7 +8,7 @@ import torch
 import torchaudio
 
 GENRES = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
-LIVE_DIR = "live"
+LIVE_DIR = "../live"
 TARGET_SR = 16000
 DURATION = 30
 FIXED_SPEC_WIDTH = 128
