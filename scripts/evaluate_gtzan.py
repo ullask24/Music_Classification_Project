@@ -42,7 +42,7 @@ def extract_tabular_features(y, sr):
         temp_row.append(np.mean(tn))
     return np.array(temp_row).reshape(1, -1)
 
-def get_individual_probabilities(xgb_model, bilstm_model, resnet_model, tabular_features, wav2vec_seq, mel_spec_tensor, device):
+def get_individual_probabilities(xgb_model, bilstm_model, resnet_model, tabular_features, wav2vec_seq, spec_numpy, device):
     """
     Holt und normalisiert die Einzelwahrscheinlichkeiten aller drei Ensemble-Modelle.
     """
@@ -56,13 +56,9 @@ def get_individual_probabilities(xgb_model, bilstm_model, resnet_model, tabular_
         bilstm_out = bilstm_model(seq_tensor)
         bilstm_probs = softmax(bilstm_out.cpu().numpy())
 
-    resnet_model.eval()
-    with torch.no_grad():
-        spec_tensor = mel_spec_tensor.to(device)
-        if spec_tensor.dim() == 3:
-            spec_tensor = spec_tensor.unsqueeze(0)
-        resnet_out = resnet_model(spec_tensor)
-        resnet_probs = softmax(resnet_out.cpu().numpy())
+    # ResNet ist ein TensorFlow/Keras-Modell und erwartet NumPy Arrays im Format (Batch, H, W, C)
+    resnet_out = resnet_model.predict(spec_numpy, verbose=0)
+    resnet_probs = softmax(resnet_out)
 
     return xgb_probs, bilstm_probs, resnet_probs
 
@@ -101,20 +97,20 @@ def evaluate_gtzan():
             else:
                 y = y[:TARGET_SR * DURATION]
             
-            # ResNet Spektrogramm mit exakter Min-Max Normalisierung[cite: 1]
+            # ResNet Spektrogramm mit exakter Min-Max Normalisierung (Keras Format: Batch, H, W, C)
             mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128, n_fft=1024, hop_length=512)
             mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
             mel_norm = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min() + 1e-8)
             temp_spec = librosa.util.fix_length(mel_norm, size=FIXED_SPEC_WIDTH, axis=1)
             temp_spec = np.expand_dims(temp_spec, axis=-1)
             X_spec = np.repeat(temp_spec, 3, axis=-1)
-            X_spec_tensor = torch.tensor(X_spec, dtype=torch.float32).permute(0, 3, 1, 2)
+            X_spec_np = np.expand_dims(X_spec, axis=0) # Shape: (1, 128, 128, 3)
             
             # Tabellarische Features
             X_tab_raw = extract_tabular_features(y, sr)
             X_tab_scaled = scaler.transform(X_tab_raw)
             
-            # Wav2Vec2 Sequence für BiLSTM[cite: 1]
+            # Wav2Vec2 Sequence für BiLSTM
             waveform = torch.tensor(y, dtype=torch.float32).unsqueeze(0).to(device)
             with torch.no_grad():
                 out = w2v_model.extract_features(waveform)
@@ -126,10 +122,10 @@ def evaluate_gtzan():
                     temp_seq = np.pad(temp_seq, ((0, 100 - temp_seq.shape[0]), (0, 0)))
             X_seq = np.expand_dims(temp_seq, axis=0)
             
-            # Einzelwahrscheinlichkeiten über die strukturierte Funktion abrufen
+            # Einzelwahrscheinlichkeiten abrufen
             p_xgb, p_lstm, p_resnet = get_individual_probabilities(
                 xgb_model, lstm_model, resnet_model, 
-                X_tab_scaled, X_seq, X_spec_tensor, device
+                X_tab_scaled, X_seq, X_spec_np, device
             )
             
             # Gewichtetes Soft-Voting (Ensemble V3)
