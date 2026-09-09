@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=live_demo_seed_vs_v3
-#SBATCH --partition=dev_gpu_h100
+#SBATCH --partition=gpu_h100
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=01:00:00
+#SBATCH --time=03:30:00
 #SBATCH --output=logs/live_demo_out_%j.txt
 #SBATCH --error=logs/live_demo_err_%j.txt
 
